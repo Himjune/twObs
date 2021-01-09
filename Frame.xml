@@ -1,0 +1,116 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script File="main.lua"/>
+		
+	<Frame name="TWObs_Frame" parent="UIParent" hidden="false" enableMouse="true" toplevel="true" movable="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="600" y="480" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<Color r="0" g="0" b="0" />
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<Button name="CEPGP_button_guild" inherits="GameMenuButtonTemplate" text="Guild">
+				<Size>
+					<AbsDimension x="80" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TWObs_Frame">
+						<Offset>
+							<AbsDimension x="10" y="-12" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="TWObs_Frame_close" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="40" y="40" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						TWObs_Frame:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+            <ScrollFrame name="EventsFrame" inherits="UIPanelScrollFrameTemplate">
+                <Size>
+                    <AbsDimension x="550" y="320" />
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="CENTER" relativeTo="TWObs_Frame">
+                        <Offset>
+                            <AbsDimension x="-12" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+                    <Color r="0" g="10" b="0" />
+                    <BackgroundInsets>
+                        <AbsInset left="11" right="12" top="12" bottom="11" />
+                    </BackgroundInsets>
+                    <TileSize>
+                        <AbsValue val="32" />
+                    </TileSize>
+                    <EdgeSize>
+                        <AbsValue val="32" />
+                    </EdgeSize>
+                </Backdrop>
+                <ScrollChild>
+                    <Frame name="Events_scrollframe_container">
+                        <Size>
+                            <AbsDimension x="550" y="300" />
+                        </Size>
+                    </Frame>
+                </ScrollChild>
+            </ScrollFrame>
+
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("ADDON_LOADED");
+				self:RegisterEvent("CHAT_MSG_ADDON");
+				self:RegisterEvent("CHAT_MSG_ADDON_LOGGED");
+				self:RegisterEvent("ENCOUNTER_END");
+			</OnLoad>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+			<OnEvent>
+				CEPGP_OnEvent(event, ...);
+			</OnEvent>
+			<OnShow>
+			</OnShow>
+		</Scripts>
+    </Frame>
+</Ui>

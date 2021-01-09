@@ -1,1 +1,2 @@
-message('My first addon!')
+--message('My first addon2!');
+TWObs_Frame:Show();
