@@ -17,9 +17,18 @@ end
 function CLEvent(...)
     local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellId, spellName, spellSchool, amount, overEnergize, powerType
-    spellId, spellName, spellSchool, amount, overEnergize, powerType = select(12, ...)
-    AddEventStr("CL" .. " | " .. subevent .. " | " .. spellName .. " | " .. spellSchool .. " | " .. powerType);
+
+    local is_mine = (sourceFlags%16 == 1);
+    local sIs_mine = "NOT_MINE";
+    if is_mine then
+        sIs_mine = "MINE";
+    end
+
+    spellId, spellName, spellSchool = select(12, ...)
     
+    if is_mine then
+        AddEventStr("CL" .. " | " .. subevent .. " | " .. spellName .. " | " .. sIs_mine .. "->" .. sourceName);
+    end
 end
 
 function TWObs_OnEvent(event)
@@ -28,10 +37,3 @@ function TWObs_OnEvent(event)
         CLEvent(CombatLogGetCurrentEventInfo());
     end
 end
-
-TWObs_Frame:Show();
-AddEventStr("msg01");
-AddEventStr("msg02");
-AddEventStr("msg03");
-AddEventStr("msg04");
-AddEventStr("msg05");
