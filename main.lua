@@ -19,15 +19,27 @@ function CLEvent(...)
     local spellId, spellName, spellSchool, amount, overEnergize, powerType
 
     local is_mine = (sourceFlags%16 == 1);
-    local sIs_mine = "NOT_MINE";
-    if is_mine then
-        sIs_mine = "MINE";
-    end
+    if is_mine and subevent == "SPELL_AURA_APPLIED" then
+        local spellId, spellName, spellSchool, auraType, amount = select(12, ...);
+        
+        AddEventStr("SAA" .. " |sId " .. spellId .. " |sN " .. spellName .. " |sS " .. spellSchool .. " |aT " .. auraType );
 
-    spellId, spellName, spellSchool = select(12, ...)
+    end
+    if is_mine and subevent == "SPELL_ENERGIZE" then
+        local spellId, spellName, spellSchool = select(12, ...);
+        local amount, overEnergize, powerType, alternatePowerType = select(15, ...);
+        local msg = "SE" .. " |sID " .. spellId .. " |sN " .. spellName .. " |sS " .. spellSchool .. " |a " .. amount .. " |pT " .. powerType;
+        if alternatePowerType then
+            msg = msg  .. " |apT " .. alternatePowerType;
+        end
+        AddEventStr(msg);
+    end
     
-    if is_mine then
-        AddEventStr("CL" .. " | " .. subevent .. " | " .. spellName .. " | " .. sIs_mine .. "->" .. sourceName);
+    if is_mine and subevent == "SPELL_HEAL" then
+        local spellId, spellName, spellSchool = select(12, ...);
+        local amount, overhealing, absorbed, critical = select(15, ...);
+        local msg = "SH" .. " |sID " .. spellId .. " |sN " .. spellName .. " |sS " .. spellSchool .. " |a " .. amount;
+        AddEventStr(msg);
     end
 end
 
