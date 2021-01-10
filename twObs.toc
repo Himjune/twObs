@@ -3,5 +3,6 @@
 ## Author: MouShindeIru
 ## Version: 0.1
 
+Templates.xml
 Frame.xml
 main.lua
