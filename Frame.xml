@@ -22,6 +22,24 @@
 			</EdgeSize>
 		</Backdrop>
 		<Frames>
+			<Button name="TWObs_button_buffs" inherits="GameMenuButtonTemplate" text="Buffs">
+				<Size>
+					<AbsDimension x="80" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TWObs_Frame">
+						<Offset>
+							<AbsDimension x="10" y="-12" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						Print_Buffs();
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="TWObs_Frame_close" inherits="UIPanelCloseButton">
 				<Size>
 					<AbsDimension x="40" y="40" />

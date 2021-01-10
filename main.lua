@@ -43,6 +43,24 @@ function CLEvent(...)
     end
 end
 
+function Print_Buffs()
+    local i = 1;
+    while UnitAura("player", i, "HELPFUL") do
+        local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL"); 
+        AddEventStr("B: " .. name .. " | " .. (expirationTime - GetTime()) .. "/" .. duration);
+        i = i + 1;
+    end
+
+    local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo();
+    if hasMainHandEnchant then
+        AddEventStr("WmH: " .. mainHandEnchantID .. " / " .. math.floor(mainHandExpiration/1000)/60);
+    end
+    if hasOffHandEnchant then
+        AddEventStr("WoH: " .. offHandEnchantId .. " / " .. math.floor(offHandExpiration/1000)/60);
+    end
+end
+
+
 function TWObs_OnEvent(event)
     --AddEventStr(event);
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
