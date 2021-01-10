@@ -77,10 +77,7 @@
 
 		<Scripts>
 			<OnLoad>
-				self:RegisterEvent("ADDON_LOADED");
-				self:RegisterEvent("CHAT_MSG_ADDON");
-				self:RegisterEvent("CHAT_MSG_ADDON_LOGGED");
-				self:RegisterEvent("ENCOUNTER_END");
+				self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();
@@ -89,7 +86,7 @@
 				self:StopMovingOrSizing();
 			</OnMouseUp>
 			<OnEvent>
-				CEPGP_OnEvent(event, ...);
+				TWObs_OnEvent(event, ...);
 			</OnEvent>
 			<OnShow>
 			</OnShow>

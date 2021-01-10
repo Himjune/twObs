@@ -14,6 +14,21 @@ function AddEventStr(msg)
     frame:Show();
 end
 
+function CLEvent(...)
+    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
+    local spellId, spellName, spellSchool, amount, overEnergize, powerType
+    spellId, spellName, spellSchool, amount, overEnergize, powerType = select(12, ...)
+    AddEventStr("CL" .. " | " .. subevent .. " | " .. spellName .. " | " .. spellSchool .. " | " .. powerType);
+    
+end
+
+function TWObs_OnEvent(event)
+    --AddEventStr(event);
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        CLEvent(CombatLogGetCurrentEventInfo());
+    end
+end
+
 TWObs_Frame:Show();
 AddEventStr("msg01");
 AddEventStr("msg02");
