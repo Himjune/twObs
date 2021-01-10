@@ -78,6 +78,7 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+				self:Show();
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();
