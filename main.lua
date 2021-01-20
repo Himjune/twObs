@@ -60,8 +60,24 @@ function Print_Buffs()
     end
 end
 
+function handleDBMevent(...)
+    local dpre, dtim, dinst, dtar = select(1, ...);
+    if dpre == "PT" then
+        print("PULL:",select(2,...));
+        if dtar then print("TAR:", dtar); end
+        Print_Buffs();
+    end
+end
 
-function TWObs_OnEvent(event)
+function TWObs_OnEvent(...)
+    local event = select(1,...);
+    if event == "CHAT_MSG_ADDON" then
+        local prefix, message, chat, sender = select(2,...);
+
+        if prefix == "D4C" then
+            handleDBMevent(strsplit("\t", message))
+        end
+    end
     --AddEventStr(event);
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         CLEvent(CombatLogGetCurrentEventInfo());
