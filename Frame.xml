@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script File="main.lua"/>
 		
-	<Frame name="TWObs_Frame" parent="UIParent" hidden="false" enableMouse="true" toplevel="true" movable="true" clampedToScreen="true">
+	<Frame name="TWObs_Frame" parent="UIParent" hidden="true" enableMouse="true" toplevel="true" movable="true" clampedToScreen="true">
 		<Size>
 			<AbsDimension x="600" y="480" />
 		</Size>
@@ -97,8 +97,7 @@
 			<OnLoad>
 				self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 				self:RegisterEvent("CHAT_MSG_ADDON");
-				
-				self:Show();
+				self:RegisterEvent("ADDON_LOADED");
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();

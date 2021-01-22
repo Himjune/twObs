@@ -2,6 +2,7 @@
 ## Title: TechWolfRaidObs
 ## Author: MouShindeIru
 ## Version: 0.1
+## SavedVariables: RaidUsageLog
 
 Templates.xml
 Frame.xml

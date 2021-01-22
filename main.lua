@@ -65,6 +65,10 @@ function handleDBMevent(...)
     if dpre == "PT" then
         print("PULL:",select(2,...));
         if dtar then print("TAR:", dtar); end
+        
+        local zoneName = GetRealZoneText();
+        message("Zone: "..zoneName);
+        print(GetNumSavedInstances(), 'ata', GetSavedInstanceInfo(2), ' tw2 ', GetSavedInstanceInfo(0));
         Print_Buffs();
     end
 end
@@ -82,4 +86,15 @@ function TWObs_OnEvent(...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         CLEvent(CombatLogGetCurrentEventInfo());
     end
+    if event == "ADDON_LOADED" and arg1 == "TechWolfRaidObs" then
+        if RaidUsageLog == nil then
+            RaidUsageLog = {};
+        end
+    end
 end
+
+SLASH_TWOBS1 = "/twobs"
+SlashCmdList["TWOBS"] = function(msg)
+   print("Hello World!")
+    _G["TWObs_Frame"]:Show();
+ end 
