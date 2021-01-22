@@ -31,10 +31,10 @@ function raidRegisterPlayerUsage(player, usage)
     local etalon = etalons[usage];
     if etalon == nil then return; end
 
-    if etalon["isLongTerm"] then
+    if etalon["isLongTerm"] and curRaid then
         raidRegisterPlayerInUsageList(player, etalon, curRaid["LongTermUsages"]);
     else 
-        if etalon["isBuff"] then
+        if etalon["isBuff"] and curEncounter then
             raidRegisterPlayerInUsageList(player, etalon, curEncounter["Buffs"]);
         else 
             raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]);
