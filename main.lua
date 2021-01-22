@@ -89,6 +89,12 @@ function TWObs_OnEvent(...)
     if event == "ADDON_LOADED" and arg1 == "TechWolfRaidObs" then
         if RaidUsageLog == nil then
             RaidUsageLog = {};
+            RaidUsageLog["Count"] = 0;
+            RaidUsageLog["Raids"] = {};
+            RaidUsageLog["RaidName"] = "-";
+            RaidUsageLog["CurrentBossCnt"] = 0;
+            RaidUsageLog["CurrentBoss"] = "";
+
         end
     end
 end
