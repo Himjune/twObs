@@ -24,14 +24,14 @@ end
 function raidRegisterPlayerUsage(player, usage)
     local etalon = RaidEtalons[usage];
     if etalon == nil then
-        etalon = {["name"]=usage, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0}
+        etalon = {["name"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5}
         RaidEtalons[usage] = etalon
     end
 
     if etalon["isLongTerm"] then
         if curRaid then raidRegisterPlayerInUsageList(player, etalon, curRaid["LongTermUsages"]); end
     else
-        if etalon["price"]>0 and curEncounter then raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]); end
+        if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]); end
     end
 
     if etalon["isBuff"] and curEncounter then
@@ -97,8 +97,13 @@ end
 --  PERSONAL FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
 
+function shout(info)
+    local msg = "";
+end
 
 function shoutBuffs()
+
+    
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
         local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL"); 
@@ -231,15 +236,25 @@ function TWObs_OnEvent(...)
 
         if RaidEtalons == nil then
             RaidEtalons = {
-                ["Восполнение маны"] = {["name"]="Восполнение маны", ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
-                ["Дух Занзы"] = {["name"]="Дух Занзы", ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
-                ["Убойное пойло Крига"] = {["name"]="Убойное пойло Крига", ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
+                ["Восполнение маны"] = {["name"]="Восполнение маны", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
+                ["Дух Занзы"] = {["name"]="Дух Занзы", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
+                ["Убойное пойло Крига"] = {["name"]="Убойное пойло Крига", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
             };
         end
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
         handleEnteringWorld(arg1, arg2);
+    end
+    name, realm = UnitName("unit")
+
+    if event == "READY_CHECK" then
+        playerName, realm = UnitName("player")
+        if arg1 == playerName then shoutBuffs(); end
+    end
+
+    if event == "READY_CHECK_CONFIRM" then        
+        if arg1 == "player" and arg2 then shoutBuffs(); end
     end
 end
 

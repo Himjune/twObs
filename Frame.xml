@@ -99,6 +99,9 @@
 				self:RegisterEvent("CHAT_MSG_ADDON");
 				self:RegisterEvent("ADDON_LOADED");
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
+				self:RegisterEvent("READY_CHECK_CONFIRM");
+				self:RegisterEvent("READY_CHECK");
+				
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();
