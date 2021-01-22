@@ -44,6 +44,7 @@ end
 
 function raidEncounterInit(tarName)
     if curRaid == nil then return; end
+    curEncounter = nil;
 
     local encIdx = curRaid["EncountersCnt"]+1;
     curRaid["EncountersCnt"] = encIdx;
@@ -59,12 +60,13 @@ function raidEncounterInit(tarName)
         curRaid["Encounters"][encIdx]["Date"] = date("%d/%m/%y %H:%M:%S", TS);
         
         curRaid["Encounters"][encIdx]["Usages"] = {};
-        curRaid["Encounters"][encIdx]["Buffs"] = {};
 
     curEncounter = curRaid["Encounters"][encIdx];
 end
 
 function raidInitRaid(raidName)
+    curRaid = nil;
+    
     local raidIdx = RaidUsageLog["Count"]+1;
     RaidUsageLog["Count"] = raidIdx;
 
@@ -79,6 +81,7 @@ function raidInitRaid(raidName)
         RaidUsageLog["Raids"][raidIdx]["Encounters"] = {};
 
         RaidUsageLog["Raids"][raidIdx]["LongTermUsages"] = {};
+        RaidUsageLog["Raids"][raidIdx]["Buffs"] = {};
 
     curRaid = RaidUsageLog["Raids"][raidIdx];
 end
@@ -209,10 +212,10 @@ function TWObs_OnEvent(...)
     if event == "CHAT_MSG_ADDON" then
         local prefix, message, chat, sender = select(2,...);
 
-        print("MSG", prefix);
+        --print("MSG", prefix);
 
         if prefix == "D4C" then
-            print("D4C");
+            --print("D4C");
             handleDBMevent(strsplit("\t", message));
         end
     end
@@ -227,16 +230,6 @@ function TWObs_OnEvent(...)
             RaidUsageLog = {};
             RaidUsageLog["Count"] = 0;
             RaidUsageLog["Raids"] = {};
-
-            RaidUsageLog["Raids"][0] = {};
-                RaidUsageLog["Raids"][0]["RaidName"] = "-";
-                RaidUsageLog["Raids"][0]["RaidTS"] = GetServerTime();
-                RaidUsageLog["Raids"][0]["RaidDate"] = date("%d/%m/%y %H:%M:%S", RaidUsageLog["Raids"][0]["RaidTS"]);
-                print("DT", RaidUsageLog["Raids"][0]["RaidDate"]);
-                RaidUsageLog["Raids"][0]["EncountersCnt"] = 0;
-
-                RaidUsageLog["Raids"][0]["Encounters"] = {};
-                    RaidUsageLog["Raids"][0]["Encounters"][0] = {};
         end
     end
 
