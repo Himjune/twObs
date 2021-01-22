@@ -98,6 +98,7 @@
 				self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 				self:RegisterEvent("CHAT_MSG_ADDON");
 				self:RegisterEvent("ADDON_LOADED");
+				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();
