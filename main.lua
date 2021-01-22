@@ -43,6 +43,8 @@ function raidRegisterPlayerUsage(player, usage)
 end
 
 function raidEncounterInit(tarName)
+    if curRaid == nil then return; end
+
     local encIdx = curRaid["EncountersCnt"]+1;
     curRaid["EncountersCnt"] = encIdx;
 
@@ -50,6 +52,7 @@ function raidEncounterInit(tarName)
 
         local encounterTitle = string.format ("%u) %s", encIdx, tarName);
         curRaid["Encounters"][encIdx]["EncName"] = encounterTitle;
+        print("ENC", curRaid["Encounters"][encIdx]["EncName"]);
 
         local TS = GetServerTime();
         curRaid["Encounters"][encIdx]["TS"] = TS;
@@ -176,6 +179,8 @@ function handleDBMevent(...)
         else
             dtar = "Unknown";
         end
+
+        print("PT", dtar, curRaid);
         raidEncounterInit(dtar);
 
         --local zoneName = GetRealZoneText();
@@ -189,7 +194,7 @@ function handleEnteringWorld(isLogin, isReload)
     local name, type, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     
     print('ENT', name, type);
-    if (type == "party" or type == "raid") then
+    if isReload == false then--(type == "party" or type == "raid") then
         print('ENT RAID', name);
         raidHandleEntering(name);
     end
@@ -199,17 +204,22 @@ end
 
 function TWObs_OnEvent(...)
     local event, arg1, arg2 = select(1,...);
+    --print("EVE", event);
+
     if event == "CHAT_MSG_ADDON" then
         local prefix, message, chat, sender = select(2,...);
 
+        print("MSG", prefix);
+
         if prefix == "D4C" then
-            handleDBMevent(strsplit("\t", message))
+            print("D4C");
+            handleDBMevent(strsplit("\t", message));
         end
     end
 
     --AddEventStr(event);
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        CLEvent(CombatLogGetCurrentEventInfo());
+        --CLEvent(CombatLogGetCurrentEventInfo());
     end
 
     if event == "ADDON_LOADED" and arg1 == "twObs" then
