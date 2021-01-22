@@ -7,12 +7,6 @@ local curEncounter = nil;
 ---------------------------------------------------------------------------------------------------------------------------
 
 
-etalons = {
-    ["Восполнение маны"] = {["name"]="Восполнение маны", ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
-    ["Дух Занзы"] = {["name"]="Дух Занзы", ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
-    ["Убойное пойло Крига"] = {["name"]="Убойное пойло Крига", ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
-}
-
 function raidRegisterPlayerInUsageList(player, etalon, usageList)
     if usageList[player] == nil then
         usageList[player] = {
@@ -28,17 +22,20 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
 end
 
 function raidRegisterPlayerUsage(player, usage)
-    local etalon = etalons[usage];
-    if etalon == nil then return; end
+    local etalon = RaidEtalons[usage];
+    if etalon == nil then
+        etalon = {["name"]=usage, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0}
+        RaidEtalons[usage] = etalon
+    end
 
-    if etalon["isLongTerm"] and curRaid then
-        raidRegisterPlayerInUsageList(player, etalon, curRaid["LongTermUsages"]);
-    else 
-        if etalon["isBuff"] and curEncounter then
-            raidRegisterPlayerInUsageList(player, etalon, curEncounter["Buffs"]);
-        else 
-            raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]);
-        end
+    if etalon["isLongTerm"] then
+        if curRaid then raidRegisterPlayerInUsageList(player, etalon, curRaid["LongTermUsages"]); end
+    else
+        if etalon["price"]>0 and curEncounter then raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]); end
+    end
+
+    if etalon["isBuff"] and curEncounter then
+        raidRegisterPlayerInUsageList(player, etalon, curRaid["Buffs"]);
     end
 end
 
@@ -66,7 +63,7 @@ end
 
 function raidInitRaid(raidName)
     curRaid = nil;
-    
+
     local raidIdx = RaidUsageLog["Count"]+1;
     RaidUsageLog["Count"] = raidIdx;
 
@@ -230,6 +227,14 @@ function TWObs_OnEvent(...)
             RaidUsageLog = {};
             RaidUsageLog["Count"] = 0;
             RaidUsageLog["Raids"] = {};
+        end
+
+        if RaidEtalons == nil then
+            RaidEtalons = {
+                ["Восполнение маны"] = {["name"]="Восполнение маны", ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
+                ["Дух Занзы"] = {["name"]="Дух Занзы", ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
+                ["Убойное пойло Крига"] = {["name"]="Убойное пойло Крига", ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
+            };
         end
     end
 
