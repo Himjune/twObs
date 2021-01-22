@@ -1,6 +1,12 @@
 local curRaid = nil;
 local curEncounter = nil;
 
+
+---------------------------------------------------------------------------------------------------------------------------
+--  RAID FUNCS
+---------------------------------------------------------------------------------------------------------------------------
+
+
 etalons = {
     ["Восполнение маны"] = {["name"]="Восполнение маны", ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
     ["Дух Занзы"] = {["name"]="Дух Занзы", ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
@@ -77,23 +83,36 @@ end
 function raidHandleEntering(instName)
     raidInitRaid(instName);
 end
+---------------------------------------------------------------------------------------------------------------------------
+--  END RAID FUNCS
+---------------------------------------------------------------------------------------------------------------------------
 
 
-iEvent = 0;
-function AddEventStr(msg)
-    local i = iEvent;
-    local frame = CreateFrame('Button', "EventStr" .. i, _G["Events_scrollframe_container"], "EventStrTemplate");
-    if i > 0 then
-        _G["EventStr" .. i]:SetPoint("TOPLEFT", _G["EventStr" .. i-1], "BOTTOMLEFT", 0, -2);
-    else
-        _G["EventStr" .. i]:SetPoint("TOPLEFT", _G["Events_scrollframe_container"], "TOPLEFT", 0, -10);
+
+
+---------------------------------------------------------------------------------------------------------------------------
+--  PERSONAL FUNCS
+---------------------------------------------------------------------------------------------------------------------------
+
+
+function shoutBuffs()
+    local i = 1;
+    while UnitAura("player", i, "HELPFUL") do
+        local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL"); 
+        AddEventStr("B: " .. name .. " | " .. (expirationTime - GetTime()) .. "/" .. duration);
+        i = i + 1;
     end
-    _G["EventStr" .. i .. "Info"]:SetText(i .. ") " .. msg);
-    iEvent = iEvent + 1;
-    frame:Show();
+
+    local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo();
+    if hasMainHandEnchant then
+        AddEventStr("WmH: " .. mainHandEnchantID .. " / " .. math.floor(mainHandExpiration/1000)/60);
+    end
+    if hasOffHandEnchant then
+        AddEventStr("WoH: " .. offHandEnchantId .. " / " .. math.floor(offHandExpiration/1000)/60);
+    end
 end
 
-function CLEvent(...)
+function shoutUsage(...)
     local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellId, spellName, spellSchool, amount, overEnergize, powerType
 
@@ -113,7 +132,7 @@ function CLEvent(...)
         end
         AddEventStr(msg);
     end
-    
+
     if is_mine and subevent == "SPELL_HEAL" then
         local spellId, spellName, spellSchool = select(12, ...);
         local amount, overhealing, absorbed, critical = select(15, ...);
@@ -122,21 +141,30 @@ function CLEvent(...)
     end
 end
 
-function Print_Buffs()
-    local i = 1;
-    while UnitAura("player", i, "HELPFUL") do
-        local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL"); 
-        AddEventStr("B: " .. name .. " | " .. (expirationTime - GetTime()) .. "/" .. duration);
-        i = i + 1;
-    end
+---------------------------------------------------------------------------------------------------------------------------
+--  END PERSONAL FUNCS
+---------------------------------------------------------------------------------------------------------------------------
 
-    local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo();
-    if hasMainHandEnchant then
-        AddEventStr("WmH: " .. mainHandEnchantID .. " / " .. math.floor(mainHandExpiration/1000)/60);
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+--  MAIN EVENTS HANDLING
+---------------------------------------------------------------------------------------------------------------------------
+
+
+iEvent = 0;
+function AddEventStr(msg)
+    local i = iEvent;
+    local frame = CreateFrame('Button', "EventStr" .. i, _G["Events_scrollframe_container"], "EventStrTemplate");
+    if i > 0 then
+        _G["EventStr" .. i]:SetPoint("TOPLEFT", _G["EventStr" .. i-1], "BOTTOMLEFT", 0, -2);
+    else
+        _G["EventStr" .. i]:SetPoint("TOPLEFT", _G["Events_scrollframe_container"], "TOPLEFT", 0, -10);
     end
-    if hasOffHandEnchant then
-        AddEventStr("WoH: " .. offHandEnchantId .. " / " .. math.floor(offHandExpiration/1000)/60);
-    end
+    _G["EventStr" .. i .. "Info"]:SetText(i .. ") " .. msg);
+    iEvent = iEvent + 1;
+    frame:Show();
 end
 
 function handleDBMevent(...)
