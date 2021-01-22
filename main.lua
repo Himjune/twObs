@@ -27,10 +27,12 @@ function raidRegisterPlayerUsage(player, usage)
 
     if etalon["isLongTerm"] then
         raidRegisterPlayerInUsageList(player, etalon, curRaid["LongTermUsages"]);
-    else if etalon["isBuff"] then
-        raidRegisterPlayerInUsageList(player, etalon, curEncounter["Buffs"]);
     else 
-        raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]);
+        if etalon["isBuff"] then
+            raidRegisterPlayerInUsageList(player, etalon, curEncounter["Buffs"]);
+        else 
+            raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]);
+        end
     end
 end
 
