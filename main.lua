@@ -24,6 +24,7 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
 end
 
 function raidRegisterPlayerUsage(player, usage)
+    print("REG", usage, "for", player);
     local etalon = RaidEtalons[usage];
     if etalon == nil then
         etalon = {["name"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5}
@@ -113,7 +114,8 @@ function shout(info)
     local playerName, realm = UnitName("player")
 
     msg = "SH|"..englishClass.."-"..playerName.."|"..info;
-    SendAddonMessage("TWOBS", msg, "GUILD");
+    print("SHOUTED", msg);
+    SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
 end
 
 function shoutBuffs()
@@ -253,6 +255,7 @@ function TWObs_OnEvent(...)
             local type, player, data = strsplit("|", message);
 
             if type == "SH" then
+                print("recSH", player, message);
                 local uname, duration = strsplit("&", message);
                 raidRegisterPlayerUsage(player,uname);
             end
