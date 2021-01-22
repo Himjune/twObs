@@ -8,16 +8,18 @@ local curEncounter = nil;
 
 
 function raidRegisterPlayerInUsageList(player, etalon, usageList)
-    if usageList[player] == nil then
-        usageList[player] = {
-            --["class"] = "priest",
+    local playerClass, playerName = strsplit("-", player);
+
+    if usageList[playerName] == nil then
+        usageList[playerName] = {
+            ["class"] = playerClass,
             ["usages"] = {}
         }
     end
 
     usageName = etalon["name"];
-    if usageList[player]["usages"][usageName] == nil then
-        usageList[player]["usages"][usageName] = true;
+    if usageList[playerName]["usages"][usageName] == nil then
+        usageList[playerName]["usages"][usageName] = true;
     end
 end
 
@@ -97,8 +99,21 @@ end
 --  PERSONAL FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
 
+function secondsLeftToStr(timeLeft) 
+    local minsLeft = math.floor(timeLeft/60);
+    local secsLeft = timeLeft % 60;
+    local strLeft = minsLeft..":"..secsLeft;
+
+    return strLeft;
+end
+
 function shout(info)
     local msg = "";
+    local localizedClass, englishClass, classIndex = UnitClass("player");
+    local playerName, realm = UnitName("player")
+
+    msg = "SH|"..englishClass.."-"..playerName.."|"..info;
+    SendAddonMessage("TWOBS", msg, "GUILD");
 end
 
 function shoutBuffs()
@@ -107,16 +122,30 @@ function shoutBuffs()
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
         local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL"); 
-        AddEventStr("B: " .. name .. " | " .. (expirationTime - GetTime()) .. "/" .. duration);
+        --AddEventStr("B: " .. name .. " | " .. (expirationTime - GetTime()) .. "/" .. duration);
+
+        local timeLeft = expirationTime - GetTime();
+        local strLeft = secondsLeftToStr(timeLeft);
+
+        shout(name.."&"..strLeft);
+
         i = i + 1;
     end
 
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo();
     if hasMainHandEnchant then
-        AddEventStr("WmH: " .. mainHandEnchantID .. " / " .. math.floor(mainHandExpiration/1000)/60);
+        local timeLeft = math.floor(mainHandExpiration/1000);
+        local strLeft = secondsLeftToStr(timeLeft);
+        
+        shout(mainHandEnchantID.."&"..strLeft);
+        --AddEventStr("WmH: " .. mainHandEnchantID .. " / " .. /60);
     end
     if hasOffHandEnchant then
-        AddEventStr("WoH: " .. offHandEnchantId .. " / " .. math.floor(offHandExpiration/1000)/60);
+        local timeLeft = math.floor(offHandExpiration/1000);
+        local strLeft = secondsLeftToStr(timeLeft);
+
+        shout(offHandEnchantId.."&"..strLeft);
+        --AddEventStr("WoH: " .. offHandEnchantId .. " / " .. math.floor(offHandExpiration/1000)/60);
     end
 end
 
@@ -217,8 +246,16 @@ function TWObs_OnEvent(...)
         --print("MSG", prefix);
 
         if prefix == "D4C" then
-            --print("D4C");
             handleDBMevent(strsplit("\t", message));
+        end
+
+        if prefix == "TWOBS" then
+            local type, player, data = strsplit("|", message);
+
+            if type == "SH" then
+                local uname, duration = strsplit("&", message);
+                raidRegisterPlayerUsage(player,uname);
+            end
         end
     end
 
