@@ -23,7 +23,7 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
     end
 end
 
-function raidRegisterPlayerUsage(player, usage)
+function raidRegisterPlayerUsage(player, usage) -- prob should add usageInfo param
     print("REG", usage, "for", player);
     local etalon = RaidEtalons[usage];
     if etalon == nil then
@@ -159,14 +159,14 @@ function shoutBuffs()
     if hasMainHandEnchant then
         local timeLeft = math.floor(mainHandExpiration/1000);
         local strLeft = secondsLeftToStr(timeLeft);
-        local enchName = getEnchantById(mainHandEnchantID);
+        local enchName = "Ench:"..mainHandEnchantID; --getEnchantById(mainHandEnchantID);
 
         shout(enchName.."&"..strLeft);
     end
     if hasOffHandEnchant then
         local timeLeft = math.floor(offHandExpiration/1000);
         local strLeft = secondsLeftToStr(timeLeft);
-        local enchName = getEnchantById(offHandEnchantId);
+        local enchName = "Ench:"..offHandEnchantId; --getEnchantById(offHandEnchantId);
 
         shout(enchName.."&"..strLeft);
     end
