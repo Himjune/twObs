@@ -12,14 +12,18 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
 
     if usageList[playerName] == nil then
         usageList[playerName] = {
-            ["class"] = playerClass,
-            ["usages"] = {}
+            ["Class"] = playerClass,
+            ["Usages"] = {}
+            ["Count"] = 0;
         }
     end
 
     usageName = etalon["name"];
-    if usageList[playerName]["usages"][usageName] == nil then
-        usageList[playerName]["usages"][usageName] = true;
+    if usageList[playerName]["Usages"][usageName] == nil then
+        usageList[playerName]["Usages"][usageName] = true;
+        local cnt = usageList[playerName]["Count"] + 1;
+        usageList[playerName]["Count"] = cnt;
+        if cnt > usageList["MaxCount"] then usageList["MaxCount"] = cnt;
     end
 end
 
@@ -59,6 +63,7 @@ function raidEncounterInit(tarName)
         curRaid["Encounters"][encIdx]["Date"] = date("%d/%m/%y %H:%M:%S", TS);
         
         curRaid["Encounters"][encIdx]["Usages"] = {};
+        curRaid["Encounters"][encIdx]["MaxCount"] = 0;
 
     curEncounter = curRaid["Encounters"][encIdx];
 end
