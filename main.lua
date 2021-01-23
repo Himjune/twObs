@@ -233,8 +233,11 @@ function handleEnteringWorld(isLogin, isReload)
     print('ENT', name, type);
     if isReload == false then--(type == "party" or type == "raid") then
         print('ENT RAID', name);
-        if curRaid and curRaid["RaidName"] ~= name then
+        print('CUR', curRaid);
+
+        if not curRaid or curRaid["RaidName"] ~= name then
             raidHandleEntering(name);
+            print('CURa', curRaid, curRaid["RaidName"]);
         end
     end
 
@@ -258,8 +261,8 @@ function TWObs_OnEvent(...)
             local type, player, data = strsplit("|", message);
 
             if type == "SH" then
-                print("recSH", player, message);
-                local uname, duration = strsplit("&", message);
+                print("recSH", player, data);
+                local uname, duration = strsplit("&", data);
                 raidRegisterPlayerUsage(player,uname);
             end
         end
