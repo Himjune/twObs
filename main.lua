@@ -27,7 +27,7 @@ function raidRegisterPlayerUsage(player, usage) -- prob should add usageInfo par
     print("REG", usage, "for", player);
     local etalon = RaidEtalons[usage];
     if etalon == nil then
-        etalon = {["name"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5}
+        etalon = {["displayName"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5}
         RaidEtalons[usage] = etalon
     end
 
@@ -310,9 +310,9 @@ function TWObs_OnEvent(...)
 
         if RaidEtalons == nil then
             RaidEtalons = {
-                ["Восполнение маны"] = {["name"]="Восполнение маны", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
-                ["Дух Занзы"] = {["name"]="Дух Занзы", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
-                ["Убойное пойло Крига"] = {["name"]="Убойное пойло Крига", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
+                ["Восполнение маны"] = {["displayName"]="Восполнение маны", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
+                ["Дух Занзы"] = {["displayName"]="Дух Занзы", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
+                ["Убойное пойло Крига"] = {["displayName"]="Убойное пойло Крига", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
             };
         end
     end
