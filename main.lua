@@ -24,7 +24,6 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
 end
 
 function raidRegisterPlayerUsage(player, usage) -- prob should add usageInfo param
-    print("REG", usage, "for", player);
     local etalon = RaidEtalons[usage];
     if etalon == nil then
         etalon = {["displayName"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=1, ["isNew"]=true, ["TS"]=GetServerTime()}
@@ -80,7 +79,7 @@ function raidInitRaid(raidName)
         RaidUsageLog["Raids"][raidIdx]["EncountersCnt"] = 0;
         RaidUsageLog["Raids"][raidIdx]["Encounters"] = {};
 
-        RaidUsageLog["Raids"][raidIdx]["LongTermUsages"] = {};
+        --RaidUsageLog["Raids"][raidIdx]["LongTermUsages"] = {};
         RaidUsageLog["Raids"][raidIdx]["Buffs"] = {};
 
     curRaid = RaidUsageLog["Raids"][raidIdx];
