@@ -249,19 +249,27 @@ end
 
 function handleEnteringWorld(isLogin, isReload)
     local name, type, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
+    local cnt = RaidUsageLog["Count"];
     
-    print('ENT', name, type);
-    if isReload == false then--(type == "party" or type == "raid") then
-        print('ENT RAID', name);
-        print('CUR', curRaid);
-
-        if not curRaid or curRaid["RaidName"] ~= name then
+    if isReload then
+        if cnt > 0 then 
+            curRaid = RaidUsageLog["Raids"][cnt];
+        else
             raidHandleEntering(name);
-            print('CURa', curRaid, curRaid["RaidName"]);
+        end
+
+    -- NO RELOAD
+    else
+        if cnt > 0 then 
+            if RaidUsageLog["Raids"][cnt] ~= name then
+                raidHandleEntering(name);
+            else
+                curRaid = RaidUsageLog["Raids"][cnt]
+            end            
+        else
+            raidHandleEntering(name);
         end
     end
-
-    print("rl", RaidUsageLog["RaidName"]);
 end
 
 function TWObs_OnEvent(...)
