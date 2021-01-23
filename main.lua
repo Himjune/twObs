@@ -120,15 +120,15 @@ local enchantsTable = {
     ["2630"] = "Deadly Poison V"
 }
 
-function getEnchantById(id) {
-    ench = enchantsTable[id];
+function getEnchantById(id) 
+    ench = enchantsTable[id..""];
 
     if ench == nil then
         ench = "EncEffect:"..id;
     end
 
     return ench;
-}
+end
 
 function shout(info)
     local msg = "";
