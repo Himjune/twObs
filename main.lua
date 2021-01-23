@@ -13,8 +13,8 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
     if usageList[playerName] == nil then
         usageList[playerName] = {
             ["Class"] = playerClass,
-            ["Usages"] = {}
-            ["Count"] = 0;
+            ["Usages"] = {},
+            ["Count"] = 0
         }
     end
 
@@ -144,9 +144,7 @@ function shout(info)
     C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
 end
 
-function shoutBuffs()
-    print("sShBfs");
-    
+function shoutBuffs()    
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
         local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL");
@@ -181,27 +179,30 @@ function shoutUsage(...)
     local spellId, spellName, spellSchool, amount, overEnergize, powerType
 
     local is_mine = (sourceFlags%16 == 1);
+
     if is_mine and subevent == "SPELL_AURA_APPLIED" then
         local spellId, spellName, spellSchool, auraType, amount = select(12, ...);
         
-        AddEventStr("SAA" .. " |sId " .. spellId .. " |sN " .. spellName .. " |sS " .. spellSchool .. " |aT " .. auraType );
-
+        if spellSchool == 1 then
+            shout(spellId..":"..spellName);
+        end
     end
     if is_mine and subevent == "SPELL_ENERGIZE" then
         local spellId, spellName, spellSchool = select(12, ...);
         local amount, overEnergize, powerType, alternatePowerType = select(15, ...);
-        local msg = "SE" .. " |sID " .. spellId .. " |sN " .. spellName .. " |sS " .. spellSchool .. " |a " .. amount .. " |pT " .. powerType;
-        if alternatePowerType then
-            msg = msg  .. " |apT " .. alternatePowerType;
+        
+        if spellSchool == 1 then
+            shout(spellId..":"..spellName);
         end
-        AddEventStr(msg);
     end
 
     if is_mine and subevent == "SPELL_HEAL" then
         local spellId, spellName, spellSchool = select(12, ...);
         local amount, overhealing, absorbed, critical = select(15, ...);
-        local msg = "SH" .. " |sID " .. spellId .. " |sN " .. spellName .. " |sS " .. spellSchool .. " |a " .. amount;
-        AddEventStr(msg);
+        
+        if spellSchool == 1 then
+            shout(spellId..":"..spellName);
+        end
     end
 end
 
@@ -302,7 +303,7 @@ function TWObs_OnEvent(...)
 
     --AddEventStr(event);
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        --CLEvent(CombatLogGetCurrentEventInfo());
+        shoutUsage(CombatLogGetCurrentEventInfo());
     end
 
     if event == "ADDON_LOADED" and arg1 == "twObs" then
