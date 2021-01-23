@@ -104,10 +104,31 @@ end
 function secondsLeftToStr(timeLeft) 
     local minsLeft = math.floor(timeLeft/60);
     --local secsLeft = timeLeft % 60;
-    --local strLeft = minsLeft..":"..secsLeft;
+    local strLeft = minsLeft..""--..secsLeft;
 
     return strLeft;
 end
+
+local enchantsTable = {
+    ["2623"] = "Minor Wizard Oil",
+    ["2624"] = "Minor Mana Oil",
+    ["2625"] = "Lesser Mana Oil",
+    ["2626"] = "Lesser Wizard Oil",
+    ["2627"] = "Wizard Oil",
+    ["2628"] = "Brilliant Wizard Oil",
+    ["2629"] = "Brilliant Mana Oil",
+    ["2630"] = "Deadly Poison V"
+}
+
+function getEnchantById(id) {
+    ench = enchantsTable[id];
+
+    if ench == nil then
+        ench = "EncEffect:"..id;
+    end
+
+    return ench;
+}
 
 function shout(info)
     local msg = "";
@@ -124,8 +145,7 @@ function shoutBuffs()
     
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
-        local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL"); 
-        --AddEventStr("B: " .. name .. " | " .. (expirationTime - GetTime()) .. "/" .. duration);
+        local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL");
 
         local timeLeft = expirationTime - GetTime();
         local strLeft = secondsLeftToStr(timeLeft);
@@ -139,16 +159,16 @@ function shoutBuffs()
     if hasMainHandEnchant then
         local timeLeft = math.floor(mainHandExpiration/1000);
         local strLeft = secondsLeftToStr(timeLeft);
-        
-        shout(mainHandEnchantID.."&"..strLeft);
-        --AddEventStr("WmH: " .. mainHandEnchantID .. " / " .. /60);
+        local enchName = getEnchantById(mainHandEnchantID);
+
+        shout(enchName.."&"..strLeft);
     end
     if hasOffHandEnchant then
         local timeLeft = math.floor(offHandExpiration/1000);
         local strLeft = secondsLeftToStr(timeLeft);
+        local enchName = getEnchantById(offHandEnchantId);
 
-        shout(offHandEnchantId.."&"..strLeft);
-        --AddEventStr("WoH: " .. offHandEnchantId .. " / " .. math.floor(offHandExpiration/1000)/60);
+        shout(enchName.."&"..strLeft);
     end
 end
 
