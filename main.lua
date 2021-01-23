@@ -15,7 +15,7 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
             ["Class"] = playerClass,
             ["Usages"] = {},
             ["Count"] = 0
-        }
+        };
     end
 
     usageName = etalon["name"];
@@ -23,7 +23,7 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
         usageList[playerName]["Usages"][usageName] = true;
         local cnt = usageList[playerName]["Count"] + 1;
         usageList[playerName]["Count"] = cnt;
-        if cnt > usageList["MaxCount"] then usageList["MaxCount"] = cnt; -- can optimize here if count max ussage for player, not encounter
+        if cnt > usageList["MaxCount"] then usageList["MaxCount"] = cnt; end -- can optimize here if count max ussage for player, not encounter
     end
 end
 
