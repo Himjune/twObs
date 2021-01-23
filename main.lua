@@ -27,7 +27,7 @@ function raidRegisterPlayerUsage(player, usage)
     print("REG", usage, "for", player);
     local etalon = RaidEtalons[usage];
     if etalon == nil then
-        etalon = {["name"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5}
+        etalon = {["name"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5}
         RaidEtalons[usage] = etalon
     end
 
@@ -84,6 +84,7 @@ function raidInitRaid(raidName)
         RaidUsageLog["Raids"][raidIdx]["Buffs"] = {};
 
     curRaid = RaidUsageLog["Raids"][raidIdx];
+    raidEncounterInit("RaidStart");
 end
 
 function raidHandleEntering(instName)
@@ -115,11 +116,11 @@ function shout(info)
 
     msg = "SH|"..englishClass.."-"..playerName.."|"..info;
     print("SHOUTED", msg);
-    SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
+    C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
 end
 
 function shoutBuffs()
-
+    print("sShBfs");
     
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
@@ -232,7 +233,9 @@ function handleEnteringWorld(isLogin, isReload)
     print('ENT', name, type);
     if isReload == false then--(type == "party" or type == "raid") then
         print('ENT RAID', name);
-        raidHandleEntering(name);
+        if curRaid and curRaid["RaidName"] ~= name then
+            raidHandleEntering(name);
+        end
     end
 
     print("rl", RaidUsageLog["RaidName"]);
