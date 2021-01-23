@@ -103,8 +103,8 @@ end
 
 function secondsLeftToStr(timeLeft) 
     local minsLeft = math.floor(timeLeft/60);
-    local secsLeft = timeLeft % 60;
-    local strLeft = minsLeft..":"..secsLeft;
+    --local secsLeft = timeLeft % 60;
+    --local strLeft = minsLeft..":"..secsLeft;
 
     return strLeft;
 end
