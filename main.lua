@@ -322,7 +322,7 @@ function TWObs_OnEvent(...)
         shoutUsage(CombatLogGetCurrentEventInfo());
     end--]]
     
-    if "UNIT_SPELLCAST_SUCCEEDED" then
+    if event == "UNIT_SPELLCAST_SUCCEEDED" then
         local unit, castGUID, spellId = select(2,...);
         --print("SCs", unit, castGUID, spellId);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
