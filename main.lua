@@ -63,7 +63,7 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
         etalon = {
             ["class"] = userClass,
             ["displayName"] = defaultDisplay,
-            ["isImportant"] = true,
+            ["isImportant"] = (usageType=="A"),
             ["isWorldBuff"] = false,
             ["Type"] = usageType,
             ["price"] = 0,
