@@ -72,7 +72,6 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
             ["modifyTS"] = GetServerTime()
         };
         RaidEtalons[usageId] = etalon
-
     end
 
     return etalon;
@@ -235,39 +234,6 @@ function shoutBuffs()
     end
 end
 
---[[ UNUSED CLEU VARIANT
-function shoutUsage(...)
-    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
-    local spellId, spellName, spellSchool, amount, overEnergize, powerType
-
-    local is_mine = (sourceFlags%16 == 1);
-
-    if is_mine and subevent == "SPELL_AURA_APPLIED" then
-        local spellId, spellName, spellSchool, auraType, amount = select(12, ...);
-        
-        if spellSchool == 1 then
-            shout(spellName.."&INST");
-        end
-    end
-    if is_mine and subevent == "SPELL_ENERGIZE" then
-        local spellId, spellName, spellSchool = select(12, ...);
-        local amount, overEnergize, powerType, alternatePowerType = select(15, ...);
-        
-        if spellSchool == 1 then
-            shout(spellName.."&"..amount);
-        end
-    end
-
-    if is_mine and subevent == "SPELL_HEAL" then
-        local spellId, spellName, spellSchool = select(12, ...);
-        local amount, overhealing, absorbed, critical = select(15, ...);
-        
-        if spellSchool == 1 then
-            shout(spellName.."&"..amount);
-        end
-    end
-end--]]
-
 ---------------------------------------------------------------------------------------------------------------------------
 --  END PERSONAL FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
@@ -304,13 +270,8 @@ function handleDBMevent(...)
             dtar = "Unknown";
         end
 
-        print("PT", dtar, curRaid);
+        startCombat();
         raidEncounterInit(dtar);
-
-        --local zoneName = GetRealZoneText();
-        --message("Zone: "..zoneName);
-        --print(GetNumSavedInstances(), 'ata', GetSavedInstanceInfo(2), ' tw2 ', GetSavedInstanceInfo(0));
-        --Print_Buffs();
     end
 end
 
@@ -358,7 +319,6 @@ function TWObs_OnEvent(...)
         --print("MSG", prefix);
 
         if prefix == "D4C" then
-            startCombat();
             handleDBMevent(strsplit("\t", message));
         end
 

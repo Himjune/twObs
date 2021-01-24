@@ -45,3 +45,38 @@ function Print_Buffs()
         AddEventStr("WoH: " .. offHandEnchantId .. " / " .. math.floor(offHandExpiration/1000)/60);
     end
 end
+
+
+
+--[[ UNUSED CLEU VARIANT
+function shoutUsage(...)
+    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
+    local spellId, spellName, spellSchool, amount, overEnergize, powerType
+
+    local is_mine = (sourceFlags%16 == 1);
+
+    if is_mine and subevent == "SPELL_AURA_APPLIED" then
+        local spellId, spellName, spellSchool, auraType, amount = select(12, ...);
+        
+        if spellSchool == 1 then
+            shout(spellName.."&INST");
+        end
+    end
+    if is_mine and subevent == "SPELL_ENERGIZE" then
+        local spellId, spellName, spellSchool = select(12, ...);
+        local amount, overEnergize, powerType, alternatePowerType = select(15, ...);
+        
+        if spellSchool == 1 then
+            shout(spellName.."&"..amount);
+        end
+    end
+
+    if is_mine and subevent == "SPELL_HEAL" then
+        local spellId, spellName, spellSchool = select(12, ...);
+        local amount, overhealing, absorbed, critical = select(15, ...);
+        
+        if spellSchool == 1 then
+            shout(spellName.."&"..amount);
+        end
+    end
+end--]]
