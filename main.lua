@@ -134,6 +134,10 @@ function getEnchantById(id)
     return ench;
 end
 
+
+-- Shout format:
+-- SH|<CLASS>/<PLAYER>|A/<NAME>/<SpellId>/<DURATION>
+-- SH|<CLASS>/<PLAYER>|I/<NAME>/<SpellId>/INSTANT
 function shout(info)
     local msg = "";
     local localizedClass, englishClass, classIndex = UnitClass("player");
