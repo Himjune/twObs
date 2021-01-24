@@ -184,7 +184,7 @@ function shoutUsage(...)
         local spellId, spellName, spellSchool, auraType, amount = select(12, ...);
         
         if spellSchool == 1 then
-            shout(spellId..":"..spellName);
+            shout(spellName.."&INST");
         end
     end
     if is_mine and subevent == "SPELL_ENERGIZE" then
@@ -192,7 +192,7 @@ function shoutUsage(...)
         local amount, overEnergize, powerType, alternatePowerType = select(15, ...);
         
         if spellSchool == 1 then
-            shout(spellId..":"..spellName);
+            shout(spellName.."&"..amount);
         end
     end
 
@@ -201,7 +201,7 @@ function shoutUsage(...)
         local amount, overhealing, absorbed, critical = select(15, ...);
         
         if spellSchool == 1 then
-            shout(spellId..":"..spellName);
+            shout(spellName.."&"..amount);
         end
     end
 end
@@ -269,7 +269,9 @@ function handleEnteringWorld(isLogin, isReload)
             if RaidUsageLog["Raids"][cnt] ~= name then
                 raidHandleEntering(name);
             else
-                curRaid = RaidUsageLog["Raids"][cnt]
+                curRaid = RaidUsageLog["Raids"][cnt];
+                local cnt = curRaid["EncountersCnt"];
+                curEncounter = curRaid["Encounters"][cnt];
             end            
         else
             raidHandleEntering(name);
@@ -303,7 +305,21 @@ function TWObs_OnEvent(...)
 
     --AddEventStr(event);
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        --print("CLEU_e", select(1,...));
+        --print("CLEU_eI", CombatLogGetCurrentEventInfo());
         shoutUsage(CombatLogGetCurrentEventInfo());
+    end
+    
+    if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_SENT" or event == "UNIT_SPELLCAST_SUCCEEDED" then
+        local unit, castGUID, spellId = select(2,...);
+        --print("SCs", unit, castGUID, spellId);
+        local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
+        print("SCsI", spellId, GetSpellInfo(spellId));
+        print("CLEU", CombatLogGetCurrentEventInfo());
+        print("CAST", select(1,...), "CL", CombatLogGetCurrentEventInfo(), "ID", spellId, spellName);
+        --print("SpellIsSelfBuff", spellId, IsHelpfulSpell(spellId), spellName, SpellIsSelfBuff(spellId));
+        --print("IsAttackN", IsAttackSpell(spellName), ";");
+        
     end
 
     if event == "ADDON_LOADED" and arg1 == "twObs" then
@@ -315,7 +331,6 @@ function TWObs_OnEvent(...)
 
         if RaidEtalons == nil then
             RaidEtalons = {
-                ["Восполнение маны"] = {["displayName"]="Восполнение маны", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=false, ["price"]=0.5},
                 ["Дух Занзы"] = {["displayName"]="Дух Занзы", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
                 ["Убойное пойло Крига"] = {["displayName"]="Убойное пойло Крига", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
                 ["Интеллект"] = {["displayName"]="Свиток Интеллекта", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=0.5},
