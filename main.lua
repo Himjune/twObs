@@ -8,10 +8,16 @@ local curEncounter = nil;
 
 
 function raidRegisterPlayerInUsageList(playerStr, usageId, usageInfo, usageList)
-    local playerClass, playerName = strsplit("-", playerStr);
+    local playerClass, playerName = strsplit("/", playerStr);
 
+    print("REGl", usageId, "into", usageList, "for", playerClass, playerName);
+
+    -- TODO probably should use full playerStr as identifier 
     if usageList[playerName] == nil then
-        usageList[playerName] = {["Class"] = playerClass, ["Usages"] = {}, ["Count"] = 0};
+        usageList[playerName] = {};
+        usageList[playerName]["Class"] = playerClass;
+        usageList[playerName]["Usages"] = {};
+        usageList[playerName]["Count"] = 0;
     end
 
     -- TODO Probably i messed up everything by mixing GetTime() and GetServerTime()
