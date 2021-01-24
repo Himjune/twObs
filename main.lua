@@ -28,7 +28,8 @@ function raidRegisterPlayerInUsageList(playerStr, etalon, usageList)
 end
 
 function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageInfo param
-    local  usageName, usageId, usageInfo = strsplit("/", usageData);
+    local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
+    
 
     local etalon = RaidEtalons[usageName];
     if etalon == nil then
