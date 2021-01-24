@@ -60,7 +60,7 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo)
             ["creationTS"] = GetServerTime(),
             ["modifyTS"] = GetServerTime()
         };
-        RaidEtalons[usageName] = etalon
+        RaidEtalons[usageId] = etalon
 
     end
 
