@@ -150,8 +150,10 @@ end
 function shoutBuffs()
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
-        local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId 
-        =  UnitAura("player", i, "HELPFUL");
+
+        --print ("UA", UnitAura("player", i, "HELPFUL"));
+        local name, rank, icon, count, duration, expirationTime, _, unitCaster, _, spellId = UnitAura("player", i, "HELPFUL");
+        --print ("UA2", expirationTime, spellId, name);
 
         local timeLeft = expirationTime - GetTime();
         local strLeft = secondsLeftToStr(timeLeft);
