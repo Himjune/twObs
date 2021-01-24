@@ -29,6 +29,13 @@ function CLEvent(...)
     end
 end
 
+    --[[AddEventStr(event);
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        --print("CLEU_e", select(1,...));
+        --print("CLEU_eI", CombatLogGetCurrentEventInfo());
+        shoutUsage(CombatLogGetCurrentEventInfo());
+    end--]]
+
 function Print_Buffs()
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do

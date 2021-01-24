@@ -310,13 +310,6 @@ function TWObs_OnEvent(...)
             end
         end
     end
-
-    --[[AddEventStr(event);
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        --print("CLEU_e", select(1,...));
-        --print("CLEU_eI", CombatLogGetCurrentEventInfo());
-        shoutUsage(CombatLogGetCurrentEventInfo());
-    end--]]
     
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
         local unit, castGUID, spellId = select(2,...);
