@@ -7,8 +7,8 @@ local curEncounter = nil;
 ---------------------------------------------------------------------------------------------------------------------------
 
 
-function raidRegisterPlayerInUsageList(player, etalon, usageList)
-    local playerClass, playerName = strsplit("-", player);
+function raidRegisterPlayerInUsageList(playerStr, etalon, usageList)
+    local playerClass, playerName = strsplit("-", playerStr);
 
     if usageList[playerName] == nil then
         usageList[playerName] = {
@@ -27,21 +27,24 @@ function raidRegisterPlayerInUsageList(player, etalon, usageList)
     end
 end
 
-function raidRegisterPlayerUsage(player, usage) -- prob should add usageInfo param
-    local etalon = RaidEtalons[usage];
+function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageInfo param
+    local  usageName, usageId, usageInfo = strsplit("/", usageData);
+
+    local etalon = RaidEtalons[usageName];
     if etalon == nil then
-        etalon = {["displayName"]=usage, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=1, ["isNew"]=true, ["TS"]=GetServerTime()}
-        RaidEtalons[usage] = etalon
+        etalon = {["displayName"]=usageName, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=1, ["isNew"]=true, ["creationTS"]=GetServerTime()}
+        RaidEtalons[usageName] = etalon
     end
 
     if etalon["isLongTerm"] then
-        if curRaid then raidRegisterPlayerInUsageList(player, etalon, curRaid["Encounters"][1]); end
+        if curRaid then raidRegisterPlayerInUsageList(playerStr, etalon, curRaid["Encounters"][1]); end
     else
-        if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(player, etalon, curEncounter["Usages"]); end
+        if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(playerStr, etalon, curEncounter["Usages"]); end
     end
 
     if etalon["isBuff"] and curEncounter then
-        raidRegisterPlayerInUsageList(player, etalon, curRaid["Buffs"]);
+        local duration = strsplit("/", usageInfo);
+        raidRegisterPlayerInUsageList(playerStr, etalon, curRaid["Buffs"]);
     end
 end
 
@@ -299,12 +302,11 @@ function TWObs_OnEvent(...)
         end
 
         if prefix == "TWOBS" then
-            local type, player, data = strsplit("|", message);
+            local type, playerStr, usageData = strsplit("|", message);
 
             if type == "SH" then
-                print("recSH", player, data);
-                local uname, duration = strsplit("&", data);
-                raidRegisterPlayerUsage(player,uname);
+                print("recSH", playerStr, usageData);
+                raidRegisterPlayerUsage(playerStr, usageData);
             end
         end
     end
