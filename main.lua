@@ -187,6 +187,7 @@ function shoutBuffs()
     end
 end
 
+--[[ UNUSED CLEU VARIANT
 function shoutUsage(...)
     local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellId, spellName, spellSchool, amount, overEnergize, powerType
@@ -217,7 +218,7 @@ function shoutUsage(...)
             shout(spellName.."&"..amount);
         end
     end
-end
+end--]]
 
 ---------------------------------------------------------------------------------------------------------------------------
 --  END PERSONAL FUNCS
