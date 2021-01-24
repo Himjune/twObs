@@ -136,19 +136,18 @@ end
 
 
 -- Shout format:
--- SH|<CLASS>/<PLAYER>|A/<NAME>/<SpellId>/<DURATION>
--- SH|<CLASS>/<PLAYER>|I/<NAME>/<SpellId>/INSTANT
-function shout(info)
-    local msg = "";
+-- SH|<CLASS>/<PLAYER>|A/<NAME>/<SpellId>/<DURATION>?...
+-- SH|<CLASS>/<PLAYER>|I/<NAME>/<SpellId>/INSTANT?...
+function shout(spellType, spellName, spellId, spellInfo)
     local localizedClass, englishClass, classIndex = UnitClass("player");
     local playerName, realm = UnitName("player")
 
-    msg = "SH|"..englishClass.."-"..playerName.."|"..info;
+    local msg = "SH|"..   englishClass.."/"..playerName   .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
     print("SHOUTED", msg);
     C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
 end
 
-function shoutBuffs()    
+function shoutBuffs()
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
         local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL");
