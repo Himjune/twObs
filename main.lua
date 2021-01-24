@@ -7,24 +7,58 @@ local curEncounter = nil;
 ---------------------------------------------------------------------------------------------------------------------------
 
 
-function raidRegisterPlayerInUsageList(playerStr, etalon, usageList)
+function raidRegisterPlayerInUsageList(playerStr, usageId, usageInfo, usageList)
     local playerClass, playerName = strsplit("-", playerStr);
 
     if usageList[playerName] == nil then
-        usageList[playerName] = {
-            ["Class"] = playerClass,
-            ["Usages"] = {},
-            ["Count"] = 0
-        };
+        usageList[playerName] = {["Class"] = playerClass, ["Usages"] = {}, ["Count"] = 0};
     end
 
-    usageName = etalon["name"];
-    if usageList[playerName]["Usages"][usageName] == nil then
-        usageList[playerName]["Usages"][usageName] = true;
+    -- TODO Probably i messed up everything by mixing GetTime() and GetServerTime()
+    local encounterSeconds = GetTime() - curEncounter["TS"];
+    local encounterTimeStr = string.format("%u:%u", math.floor(encounterSeconds/60), encounterSeconds%60);
+
+    usageInstance = usageList[playerName]["Usages"][usageId];
+    if usageList[playerName]["Usages"][usageId] == nil then
+        usageList[playerName]["Usages"][usageId] = {
+            ["spellId"] = usageId,
+            ["shotsCnt"] = 0,
+            ["shots"] = {},
+        };
+
         local cnt = usageList[playerName]["Count"] + 1;
         usageList[playerName]["Count"] = cnt;
         if cnt > usageList["MaxCount"] then usageList["MaxCount"] = cnt; end -- can optimize here if count max ussage for player, not encounter
     end
+
+    local shotsCnt = usageInstance["shotsCnt"] +1;
+    usageInstance["shotsCnt"] = shotsCnt;
+    usageInstance["shots"][shotsCnt] = {
+        ["encounterTime"] = encounterTimeStr;
+        ["usageInfo"] = usageInfo;
+    }
+end
+
+function tryGetEtalon(usageType, usageName, usageId, usageInfo) 
+    -- Register part
+    local etalon = RaidEtalons[usageId];
+    if etalon == nil then
+        local defaultDisplay = string.format ("%s (%s)", usageName, usageId);
+        etalon = {
+            ["displayName"] = defaultDisplay,
+            ["isImportant"] = true,
+            ["isWorldBuff"] = false,
+            ["Type"] = usageType,
+            ["price"] = 0,
+            ["isNew"] = true,
+            ["creationTS"] = GetServerTime(),
+            ["modifyTS"] = GetServerTime()
+        };
+        RaidEtalons[usageName] = etalon
+
+    end
+
+    return etalon;
 end
 
 function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageInfo param
@@ -33,22 +67,17 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
 
     local isBuff = (usageType == "A");
 
-    local etalon = RaidEtalons[usageName];
-    if etalon == nil then
-        local defaultDisplay = string.format ("%s (%s)", usageName, usageId);
-        etalon = {["displayName"]=defaultDisplay, ["isImportant"]=true, ["isLongTerm"]=false, ["Type"]=usageType, ["price"]=1, ["isNew"]=true, ["creationTS"]=GetServerTime()}
-        RaidEtalons[usageName] = etalon
-    end
+    local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo);
 
-    if etalon["isLongTerm"] then
+    if etalon["isWorldBuff"] then
         if curRaid then raidRegisterPlayerInUsageList(playerStr, etalon, curRaid["Encounters"][1]); end
     else
-        if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(playerStr, etalon, curEncounter["Usages"]); end
+        if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(playerStr, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
     if etalon["Type"] == "A" and curEncounter then
         local duration = strsplit("/", usageInfo);
-        raidRegisterPlayerInUsageList(playerStr, etalon, curRaid["Buffs"]);
+        raidRegisterPlayerInUsageList(playerStr, usageId, curRaid["Buffs"]);
     end
 end
 
@@ -270,9 +299,13 @@ function handleEnteringWorld(isLogin, isReload)
     local name, type, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     local cnt = RaidUsageLog["Count"];
     
+    print("ENTERING", name, "C", cnt, "L", isLogin, "R", isReload);
+
     if isReload then
         if cnt > 0 then 
             curRaid = RaidUsageLog["Raids"][cnt];
+            local eCnt = curRaid["EncountersCnt"];
+            curEncounter = curRaid["Encounters"][eCnt];
         else
             raidHandleEntering(name);
         end
@@ -291,6 +324,9 @@ function handleEnteringWorld(isLogin, isReload)
             raidHandleEntering(name);
         end
     end
+
+    print("NOW RAID", curRaid, curRaid["RaidName"]);
+    print("NOW ENCOUNTER", curEncounter, curEncounter["EncName"]);
 end
 
 function TWObs_OnEvent(...)
@@ -339,12 +375,7 @@ function TWObs_OnEvent(...)
         end
 
         if RaidEtalons == nil then
-            RaidEtalons = {
-                ["Дух Занзы"] = {["displayName"]="Дух Занзы", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=1},
-                ["Убойное пойло Крига"] = {["displayName"]="Убойное пойло Крига", ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=0.5},
-                ["Интеллект"] = {["displayName"]="Свиток Интеллекта", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=0.5},
-                ["Дух"] = {["displayName"]="Свиток Духа", ["isImportant"]=true, ["isLongTerm"]=true, ["isBuff"]=true, ["price"]=0.5},
-            };
+            RaidEtalons = {};
         end
     end
 
