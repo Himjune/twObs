@@ -102,6 +102,8 @@
 				self:RegisterEvent("READY_CHECK_CONFIRM");
 				self:RegisterEvent("READY_CHECK");
 				self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+				self:RegisterEvent("PLAYER_REGEN_ENABLED");
+				
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();

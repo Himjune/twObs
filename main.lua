@@ -1,12 +1,15 @@
 local curRaid = nil;
 local curEncounter = nil;
-local isCombat = false;
+local inCombat = false;
 
+-- TODO enter combat if no dbm pull emited
 function startCombat()
+    inCombat = true;
 
 end
 
 function endCombat()
+    inCombat = false;
 
 end
 
@@ -15,8 +18,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------------
 
 
-function raidRegisterPlayerInUsageList(playerStr, usageId, usageInfo, usageList)
-    local playerClass, playerName = strsplit("/", playerStr);
+function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList)
 
     print("REGl", usageId, "into", usageList, "for", playerClass, playerName);
 
@@ -53,12 +55,13 @@ function raidRegisterPlayerInUsageList(playerStr, usageId, usageInfo, usageList)
     }
 end
 
-function tryGetEtalon(usageType, usageName, usageId, usageInfo) 
+function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass) 
     -- Register part
     local etalon = RaidEtalons[usageId];
     if etalon == nil then
         local defaultDisplay = string.format ("%s (%s)", usageName, usageId);
         etalon = {
+            ["class"] = userClass,
             ["displayName"] = defaultDisplay,
             ["isImportant"] = true,
             ["isWorldBuff"] = false,
@@ -77,6 +80,8 @@ end
 
 function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageInfo param
     local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
+    local playerClass, playerName = strsplit("/", playerStr);
+
     print("REG", usageType, usageName, usageId, usageInfo, "for", playerStr);
 
     local isBuff = (usageType == "A");
@@ -84,14 +89,14 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo);
 
     if etalon["isWorldBuff"] then
-        if curRaid then raidRegisterPlayerInUsageList(playerStr, etalon, curRaid["Encounters"][1]); end
+        if curRaid and inCombat then raidRegisterPlayerInUsageList(playerClass, playerName, etalon, curRaid["Encounters"][1]); end
     else
-        if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(playerStr, usageId, usageInfo, curEncounter["Usages"]); end
+        if etalon["isImportant"] and curEncounter and inCombat then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
-    if etalon["Type"] == "A" and curEncounter then
+    if etalon["Type"] == "A" then
         local duration = strsplit("/", usageInfo);
-        raidRegisterPlayerInUsageList(playerStr, usageId, curRaid["Buffs"]);
+        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, curRaid["Buffs"]);
     end
 end
 
@@ -353,6 +358,7 @@ function TWObs_OnEvent(...)
         --print("MSG", prefix);
 
         if prefix == "D4C" then
+            startCombat();
             handleDBMevent(strsplit("\t", message));
         end
 
@@ -393,13 +399,16 @@ function TWObs_OnEvent(...)
         end
     end
 
+    if event == "PLAYER_REGEN_ENABLED" then
+        endCombat();
+    end
+
     if event == "PLAYER_ENTERING_WORLD" then
         handleEnteringWorld(arg1, arg2);
     end
-    name, realm = UnitName("unit")
 
     if event == "READY_CHECK" then
-        playerName, realm = UnitName("player")
+        local playerName, realm = UnitName("player")
         if arg1 == playerName then shoutBuffs(); end
     end
 
