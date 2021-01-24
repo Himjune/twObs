@@ -29,12 +29,14 @@ end
 
 function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageInfo param
     local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
-    
+    print("REG", usageType, usageName, usageId, usageInfo, "for", playerStr);
+
+    local isBuff = (usageType == "A");
 
     local etalon = RaidEtalons[usageName];
     if etalon == nil then
         local defaultDisplay = string.format ("%s (%s)", usageName, usageId);
-        etalon = {["displayName"]=defaultDisplay, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=1, ["isNew"]=true, ["creationTS"]=GetServerTime()}
+        etalon = {["displayName"]=defaultDisplay, ["isImportant"]=true, ["isLongTerm"]=false, ["Type"]=usageType, ["price"]=1, ["isNew"]=true, ["creationTS"]=GetServerTime()}
         RaidEtalons[usageName] = etalon
     end
 
@@ -44,7 +46,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
         if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(playerStr, etalon, curEncounter["Usages"]); end
     end
 
-    if etalon["isBuff"] and curEncounter then
+    if etalon["Type"] == "A" and curEncounter then
         local duration = strsplit("/", usageInfo);
         raidRegisterPlayerInUsageList(playerStr, etalon, curRaid["Buffs"]);
     end
