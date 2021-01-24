@@ -47,6 +47,26 @@ function Print_Buffs()
 end
 
 
+-- https://wowwiki.fandom.com/wiki/EnchantId/Enchant_IDs
+local enchantsTable = {
+    ["2623"] = "Слабое волшебное масло",
+    ["2624"] = "Слабое масло маны",
+    ["2625"] = "Малое масло маны",
+    ["2626"] = "Малое волшебное масло",
+    ["2627"] = "Волшебное масло",
+    ["2628"] = "Сверкающее волшебное масло",
+    ["2629"] = "Сверкающее масло маны"
+}
+
+function getEnchantById(id) 
+    ench = enchantsTable[id..""];
+
+    if ench == nil then
+        ench = "EncEffect:"..id;
+    end
+
+    return ench;
+end
 
 --[[ UNUSED CLEU VARIANT
 function shoutUsage(...)
