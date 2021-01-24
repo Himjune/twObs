@@ -32,7 +32,8 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
 
     local etalon = RaidEtalons[usageName];
     if etalon == nil then
-        etalon = {["displayName"]=usageName, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=1, ["isNew"]=true, ["creationTS"]=GetServerTime()}
+        local defaultDisplay = string.format ("%s (%s)", usageName, usageId);
+        etalon = {["displayName"]=defaultDisplay, ["isImportant"]=true, ["isLongTerm"]=false, ["isBuff"]=true, ["price"]=1, ["isNew"]=true, ["creationTS"]=GetServerTime()}
         RaidEtalons[usageName] = etalon
     end
 
