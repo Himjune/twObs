@@ -1,6 +1,14 @@
 local curRaid = nil;
 local curEncounter = nil;
+local isCombat = false;
 
+function startCombat()
+
+end
+
+function endCombat()
+
+end
 
 ---------------------------------------------------------------------------------------------------------------------------
 --  RAID FUNCS
