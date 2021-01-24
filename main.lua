@@ -150,12 +150,13 @@ end
 function shoutBuffs()
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
-        local name, icon, count, debuffType, duration, expirationTime = UnitAura("player", i, "HELPFUL");
+        local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId 
+        =  UnitAura("player", i, "HELPFUL");
 
         local timeLeft = expirationTime - GetTime();
         local strLeft = secondsLeftToStr(timeLeft);
 
-        shout(name.."&"..strLeft);
+        shout("A", name, spellId, strLeft);
 
         i = i + 1;
     end
@@ -166,14 +167,14 @@ function shoutBuffs()
         local strLeft = secondsLeftToStr(timeLeft);
         local enchName = "Ench:"..mainHandEnchantID; --getEnchantById(mainHandEnchantID);
 
-        shout(enchName.."&"..strLeft);
+        shout("A", "TempMainHandEnchant", mainHandEnchantID, strLeft);
     end
     if hasOffHandEnchant then
         local timeLeft = math.floor(offHandExpiration/1000);
         local strLeft = secondsLeftToStr(timeLeft);
         local enchName = "Ench:"..offHandEnchantId; --getEnchantById(offHandEnchantId);
 
-        shout(enchName.."&"..strLeft);
+        shout("A", "TempOffHandEnchant", offHandEnchantId, strLeft);
     end
 end
 
