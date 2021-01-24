@@ -101,10 +101,7 @@
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("READY_CHECK_CONFIRM");
 				self:RegisterEvent("READY_CHECK");
-				self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");	
-				self:RegisterEvent("UNIT_SPELLCAST_START");	
-				self:RegisterEvent("UNIT_SPELLCAST_SENT");		
-
+				self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();

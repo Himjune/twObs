@@ -315,23 +315,19 @@ function TWObs_OnEvent(...)
         end
     end
 
-    --AddEventStr(event);
+    --[[AddEventStr(event);
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         --print("CLEU_e", select(1,...));
         --print("CLEU_eI", CombatLogGetCurrentEventInfo());
         shoutUsage(CombatLogGetCurrentEventInfo());
-    end
+    end--]]
     
-    if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_SENT" or event == "UNIT_SPELLCAST_SUCCEEDED" then
+    if "UNIT_SPELLCAST_SUCCEEDED" then
         local unit, castGUID, spellId = select(2,...);
         --print("SCs", unit, castGUID, spellId);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
-        print("SCsI", spellId, GetSpellInfo(spellId));
-        print("CLEU", CombatLogGetCurrentEventInfo());
-        print("CAST", select(1,...), "CL", CombatLogGetCurrentEventInfo(), "ID", spellId, spellName);
-        --print("SpellIsSelfBuff", spellId, IsHelpfulSpell(spellId), spellName, SpellIsSelfBuff(spellId));
-        --print("IsAttackN", IsAttackSpell(spellName), ";");
-        
+
+        shout("I", spellName, spellId, "INSTANT&");
     end
 
     if event == "ADDON_LOADED" and arg1 == "twObs" then
