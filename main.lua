@@ -360,7 +360,8 @@ function TWObs_OnEvent(...)
             inEncounter = false; 
         end
 
-        --print("RegPREFIX", C_ChatInfo.RegisterAddonMessagePrefix("TWOBS"));
+        local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
+        print("RegPREFIX", regPrefixResult);
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
@@ -391,6 +392,12 @@ SlashCmdList["TWOBS"] = function(msg)
         done = true;
     end
      
+    if msg == "stat" then
+        --print("endCommand");
+        print("inEncounter", inEncounter)
+        done = true;
+    end
+
     if done then
         return;
     end
