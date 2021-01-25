@@ -5,6 +5,7 @@ local curEncounter = nil;
 function startEncounter()
     inEncounter = true;
     --print("startEncounter");
+    raidEncounterInit("ManualStart")
     shoutBuffs();
 end
 
@@ -159,7 +160,7 @@ function raidInitRaid(raidName)
 
         --RaidUsageLog["Raids"][raidIdx]["LongTermUsages"] = {};
         RaidUsageLog["Raids"][raidIdx]["Buffs"] = {};
-        RaidUsageLog["Raids"][raidIdx]["PlayerMax"] = {};
+        RaidUsageLog["Raids"][raidIdx]["Players"] = {};
 
     curRaid = RaidUsageLog["Raids"][raidIdx];
     raidEncounterInit("RaidStart");
