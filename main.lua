@@ -54,6 +54,8 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
         if cnt > curRaid["PlayerMax"][playerName] then
             curRaid["PlayerMax"][playerName] = cnt;
         end
+
+        usageInstance = usageList[playerName]["Usages"][usageId];
     end
 
     local shotsCnt = usageInstance["shotsCnt"] +1;
@@ -357,6 +359,8 @@ function TWObs_OnEvent(...)
         if inEncounter == nil then
             inEncounter = false; 
         end
+
+        print("RegPREFIX", C_ChatInfo.RegisterAddonMessagePrefix("TWOBS"));
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
