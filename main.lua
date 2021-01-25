@@ -5,11 +5,13 @@ local inCombat = false;
 -- TODO enter combat if no dbm pull emited
 function startCombat()
     inCombat = true;
+    print("CombatStart");
 
 end
 
 function endCombat()
     inCombat = false;
+    print("CombatEnd");
 
 end
 
@@ -61,7 +63,7 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
     if etalon == nil then
         local defaultDisplay = string.format ("%s (%s)", usageName, usageId);
         etalon = {
-            ["class"] = userClass,
+            ["class"] = { ["userClass"] = true },
             ["displayName"] = defaultDisplay,
             ["isImportant"] = (usageType=="A"),
             ["isWorldBuff"] = false,
@@ -72,6 +74,10 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
             ["modifyTS"] = GetServerTime()
         };
         RaidEtalons[usageId] = etalon
+    end
+
+    if not etalon["class"][userClass] then
+        etalon["class"][userClass] = true;
     end
 
     return etalon;
