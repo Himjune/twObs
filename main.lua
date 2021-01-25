@@ -31,6 +31,10 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
         usageList[playerName]["Count"] = 0;
     end
 
+    if curRaid["PlayerMax"][playerName] == nil then
+        curRaid["PlayerMax"][playerName] = 0;
+    end
+
     -- TODO Probably i messed up everything by mixing GetTime() and GetServerTime()
     local encounterSeconds = GetTime() - curEncounter["TS"];
     print("ENCtime", encounterSeconds, curEncounter["TS"], GetTime());
@@ -46,7 +50,10 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
 
         local cnt = usageList[playerName]["Count"] + 1;
         usageList[playerName]["Count"] = cnt;
-        if cnt > usageList["MaxCount"] then usageList["MaxCount"] = cnt; end -- can optimize here if count max ussage for player, not encounter
+
+        if cnt > curRaid["PlayerMax"][playerName] then
+            curRaid["PlayerMax"][playerName] = cnt;
+        end
     end
 
     local shotsCnt = usageInstance["shotsCnt"] +1;
@@ -76,7 +83,7 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
         RaidEtalons[usageId] = etalon
     end
 
-    if RaidEtalons[usageId]["class"][userClass] == nil or RaidEtalons[usageId]["class"][userClass] == false then
+    if not RaidEtalons[usageId]["class"][userClass] then
         RaidEtalons[usageId]["class"][userClass] = true;
     end
 
@@ -146,6 +153,7 @@ function raidInitRaid(raidName)
 
         --RaidUsageLog["Raids"][raidIdx]["LongTermUsages"] = {};
         RaidUsageLog["Raids"][raidIdx]["Buffs"] = {};
+        RaidUsageLog["Raids"][raidIdx]["PlayerMax"] = {};
 
     curRaid = RaidUsageLog["Raids"][raidIdx];
     raidEncounterInit("RaidStart");
