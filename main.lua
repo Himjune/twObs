@@ -31,8 +31,10 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
         usageList[playerName]["Count"] = 0;
     end
 
-    if curRaid["PlayerMax"][playerName] == nil then
-        curRaid["PlayerMax"][playerName] = 0;
+    if curRaid["Players"][playerName] == nil then
+        curRaid["Players"][playerName] = {};
+        curRaid["Players"][playerName]["MaxUsages"] = 0;
+        curRaid["Players"][playerName]["Class"] = playerClass;
     end
 
     -- TODO Probably i messed up everything by mixing GetTime() and GetServerTime()
@@ -49,11 +51,11 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
             ["spellId"] = usageId,
             ["shotsCnt"] = 0,
             ["shots"] = {},
-            ["encIdx"] = cnt;
+            ["inEncIdx"] = cnt;
         };
 
-        if cnt > curRaid["PlayerMax"][playerName] then
-            curRaid["PlayerMax"][playerName] = cnt;
+        if cnt > curRaid["Players"][playerName]["MaxUsages"] then
+            curRaid["Players"][playerName]["MaxUsages"] = cnt;
         end
 
         usageInstance = usageList[playerName]["Usages"][usageId];
@@ -126,6 +128,7 @@ function raidEncounterInit(tarName)
 
         local encounterTitle = string.format ("%u) %s", encIdx, tarName);
         curRaid["Encounters"][encIdx]["EncName"] = encounterTitle;
+        curRaid["Encounters"][encIdx]["EncNo"] = encIdx;
         ----print("ENC", curRaid["Encounters"][encIdx]["EncName"]);
 
         local TS = GetServerTime();
