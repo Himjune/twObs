@@ -33,6 +33,7 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
 
     -- TODO Probably i messed up everything by mixing GetTime() and GetServerTime()
     local encounterSeconds = GetTime() - curEncounter["TS"];
+    print("ENCtime", encounterSeconds, curEncounter["TS"], GetTime());
     local encounterTimeStr = string.format("%u:%u", math.floor(encounterSeconds/60), encounterSeconds%60);
 
     usageInstance = usageList[playerName]["Usages"][usageId];
@@ -62,7 +63,7 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
     if etalon == nil then
         local defaultDisplay = string.format ("%s (%s)", usageName, usageId);
         etalon = {
-            ["class"] = { ["userClass"] = true },
+            ["class"] = {},
             ["displayName"] = defaultDisplay,
             ["isImportant"] = (usageType=="A"),
             ["isWorldBuff"] = false,
@@ -75,8 +76,8 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
         RaidEtalons[usageId] = etalon
     end
 
-    if not etalon["class"][userClass] then
-        etalon["class"][userClass] = true;
+    if RaidEtalons[usageId]["class"][userClass] == nil or RaidEtalons[usageId]["class"][userClass] == false then
+        RaidEtalons[usageId]["class"][userClass] = true;
     end
 
     return etalon;
@@ -90,7 +91,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
 
     local isBuff = (usageType == "A");
 
-    local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo);
+    local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
     if etalon["isWorldBuff"] then
         if curRaid then raidRegisterPlayerInUsageList(playerClass, playerName, etalon, curRaid["Encounters"][1]); end
@@ -307,6 +308,7 @@ function TWObs_OnEvent(...)
         end
 
         if prefix == "TWOBS" then
+            print("TWmsg", message);
             local type, playerStr, usageData = strsplit("|", message);
 
             if type == "SH" then
@@ -314,11 +316,13 @@ function TWObs_OnEvent(...)
                 raidRegisterPlayerUsage(playerStr, usageData);
             end
 
-            if type == "EC" and message == "START" then
-                startCombat();
+            if type == "EC" and message == "EC|START" then
+                print("EC", message);
+                startEncounter();
             end
-            if type == "EC" and message == "END" then
-                endCombat();
+            if type == "EC" and message == "EC|END" then
+                print("EC", message);
+                endEncounter();
             end
         end
     end
@@ -342,7 +346,9 @@ function TWObs_OnEvent(...)
             RaidEtalons = {};
         end
 
-        if inEncounter == nil then inEncounter = false; then
+        if inEncounter == nil then
+            inEncounter = false; 
+        end
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
@@ -368,6 +374,7 @@ SlashCmdList["TWOBS"] = function(msg)
     end
    
     if msg == "end" then
+        print("endCommand");
         C_ChatInfo.SendAddonMessage("TWOBS", "EC|END", "RAID");
         done = true;
     end
