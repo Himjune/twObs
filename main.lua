@@ -1,17 +1,17 @@
 local curRaid = nil;
 local curEncounter = nil;
-local inCombat = false;
+local inEncounter = false;
 
 -- TODO enter combat if no dbm pull emited
-function startCombat()
-    inCombat = true;
-    print("CombatStart");
-
+function startEncounter()
+    inEncounter = true;
+    print("startEncounter");
+    shoutBuffs();
 end
 
-function endCombat()
-    inCombat = false;
-    print("CombatEnd");
+function endEncounter()
+    inEncounter = false;
+    print("endEncounter");
 
 end
 
@@ -94,9 +94,9 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo);
 
     if etalon["isWorldBuff"] then
-        if curRaid and inCombat then raidRegisterPlayerInUsageList(playerClass, playerName, etalon, curRaid["Encounters"][1]); end
+        if curRaid then raidRegisterPlayerInUsageList(playerClass, playerName, etalon, curRaid["Encounters"][1]); end
     else
-        if etalon["isImportant"] and curEncounter and inCombat then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
+        if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
     if etalon["Type"] == "A" then
@@ -255,8 +255,8 @@ function handleDBMevent(...)
             dtar = "Unknown";
         end
 
-        startCombat();
         raidEncounterInit(dtar);
+        C_ChatInfo.SendAddonMessage("TWOBS", "EC|START", "RAID");
     end
 end
 
@@ -314,6 +314,13 @@ function TWObs_OnEvent(...)
                 print("recSH", playerStr, usageData);
                 raidRegisterPlayerUsage(playerStr, usageData);
             end
+
+            if type == "EC" and message == "START" then
+                startCombat();
+            end
+            if type == "EC" and message == "END" then
+                endCombat();
+            end
         end
     end
     
@@ -322,7 +329,7 @@ function TWObs_OnEvent(...)
         --print("SCs", unit, castGUID, spellId);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
 
-        shout("I", spellName, spellId, "INSTANT&");
+        if inEncounter then shout("I", spellName, spellId, "INSTANT&"); end
     end
 
     if event == "ADDON_LOADED" and arg1 == "twObs" then
@@ -335,10 +342,6 @@ function TWObs_OnEvent(...)
         if RaidEtalons == nil then
             RaidEtalons = {};
         end
-    end
-
-    if event == "PLAYER_REGEN_ENABLED" then
-        endCombat();
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
@@ -357,6 +360,19 @@ end
 
 SLASH_TWOBS1 = "/twobs"
 SlashCmdList["TWOBS"] = function(msg)
-   print("Hello World!")
+    local done = false;
+    if msg == "start" then
+        C_ChatInfo.SendAddonMessage("TWOBS", "EC|START", "RAID");
+        done = true;
+    end
+   
+    if msg == "end" then
+        C_ChatInfo.SendAddonMessage("TWOBS", "EC|END", "RAID");
+        done = true;
+    end
+     
+    if done then
+        return;
+    end
     _G["TWObs_Frame"]:Show();
  end 
