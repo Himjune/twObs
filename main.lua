@@ -42,14 +42,15 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
 
     usageInstance = usageList[playerName]["Usages"][usageId];
     if usageList[playerName]["Usages"][usageId] == nil then
+        local cnt = usageList[playerName]["Count"] + 1;
+        usageList[playerName]["Count"] = cnt;
+
         usageList[playerName]["Usages"][usageId] = {
             ["spellId"] = usageId,
             ["shotsCnt"] = 0,
             ["shots"] = {},
+            ["encIdx"] = cnt;
         };
-
-        local cnt = usageList[playerName]["Count"] + 1;
-        usageList[playerName]["Count"] = cnt;
 
         if cnt > curRaid["PlayerMax"][playerName] then
             curRaid["PlayerMax"][playerName] = cnt;
