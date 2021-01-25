@@ -103,14 +103,14 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
     if etalon["isWorldBuff"] then
-        if curRaid then raidRegisterPlayerInUsageList(playerClass, playerName, etalon, curRaid["Encounters"][1]); end
+        if curRaid then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Encounters"][1]); end
     else
         if etalon["isImportant"] and curEncounter then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
     if etalon["Type"] == "A" then
         local duration = strsplit("/", usageInfo);
-        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, curRaid["Buffs"]);
+        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Buffs"]);
     end
 end
 
