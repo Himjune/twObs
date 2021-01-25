@@ -1,6 +1,5 @@
 local curRaid = nil;
 local curEncounter = nil;
-local inEncounter = false;
 
 -- TODO enter combat if no dbm pull emited
 function startEncounter()
@@ -342,6 +341,8 @@ function TWObs_OnEvent(...)
         if RaidEtalons == nil then
             RaidEtalons = {};
         end
+
+        if inEncounter == nil then inEncounter = false; then
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
