@@ -1,8 +1,6 @@
 local curRaid = nil;
 local curEncounter = nil;
 
-local CSV_DELIMITRIER = ","
-
 -- TODO enter combat if no dbm pull emited
 function startEncounter()
     inEncounter = true;
@@ -16,125 +14,6 @@ function endEncounter()
     --print("endEncounter");
 
 end
-
-
----------------------------------------------------------------------------------------------------------------------------
---  RENDER FUNCS
----------------------------------------------------------------------------------------------------------------------------
-
-function formEncountersLine(RaidNo)
-    local line = CSV_DELIMITRIER;
-
-    for i, encounter in pairs(RaidUsageLog["Raids"][RaidNo]["Encounters"]) do
-        print("["..i.."] " .. encounter["EncName"]);
-        line = line .. encounter["EncName"]..CSV_DELIMITRIER..'EP'..CSV_DELIMITRIER;
-    end
-
-    return line;
-end
-
-function importantsForPlayerOnAllEncounters(playerName, encountersList)
-    local maxPerEncounter = 0;
-    local encAmount = 0;
-    local wholeSum = 0;
-    importantUsages = {};
-
-    for encIdx, encounter in pairs(encountersList) do
-        local encounterImportantCnt = 0;
-        local epSum = 0;
-
-        encAmount = encAmount +1;
-
-        importantUsages[encIdx] = {};
-        importantUsages[encIdx]["EncName"] = encounter["EncName"];
-        importantUsages[encIdx]["Count"] = 0;
-
-        epSum = 0;
-        if encounter["Usages"][playerName] then
-            for usageName, usageInfo in pairs(encounter["Usages"][playerName]["Usages"]) do
-                print("CHECK", usageName);
-                if RaidEtalons[usageName]["isImportant"] then
-                    encounterImportantCnt = encounterImportantCnt +1;
-
-                    importantUsages[encounterImportantCnt] = {};
-                    importantUsages[encounterImportantCnt]["name"] = RaidEtalons[usageName]["displayName"];
-                    importantUsages[encounterImportantCnt]["EP"] = RaidEtalons[usageName]["price"];
-                    epSum = epSum + RaidEtalons[usageName]["price"];
-                end
-            end
-        end
-
-        wholeSum = wholeSum + epSum;
-        importantUsages[encIdx]["epSum"] = epSum;
-        importantUsages[encIdx]["Count"] = encounterImportantCnt;
-        if maxPerEncounter < encounterImportantCnt then maxPerEncounter = encounterImportantCnt; end
-    end
-
-    return maxPerEncounter, wholeSum, importantUsages;
-end
-
-function formPlayerLinesForAllEncounters(playerName, encountersList)
-    local lines = playerName;
-    local maxPerEncounter = 0;
-    local encAmount = table.getn(encountersList);
-
-    local playerSum = 0;
-
-    print("encAMOUNT", encAmount);
-
-    -- Should make: ,USAGE_NAME,EP
-    maxPerEncounter, playerSum, importantUsagesPerEncounters = importantsForPlayerOnAllEncounters(playerName, encountersList);
-    
-    for lineNo=1,maxPerEncounter do 
-
-        for encNo=1,encAmount do
-            if importantUsagesPerEncounters[encNo][lineNo] then
-                lines = lines .. CSV_DELIMITRIER .. importantUsagesPerEncounters[lineNo][encNo]["name"] .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["EP"];
-            else
-                lines = lines .. CSV_DELIMITRIER .. CSV_DELIMITRIER;
-            end
-        end
-
-        lines = lines .. "\n";
-    end
-
-    -- SUM LINE
-    lines = lines .. playerSum .. CSV_DELIMITRIER;
-    for encNo=1,encAmount do
-        print("SL", lines);
-        dumps = importantUsagesPerEncounters;
-        print("D", dumps);
-        lines = lines .. "" .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo]["epSum"] .. CSV_DELIMITRIER
-    end
-
-    lines = lines .. "\n";
-    for encNo=1,encAmount do    -- Empty line to separate players
-        lines = lines .. "" .. CSV_DELIMITRIER .. "" .. CSV_DELIMITRIER
-    end
-
-    lines = lines .. "\n";
-    return lines;
-end
-
-function renderCSV(RaidNo)
-    local result = "";
-
-    result = result .. formEncountersLine(RaidNo).."\n";
-    
-    for playerName, playerInfo in pairs(RaidUsageLog["Raids"][RaidNo]["Players"]) do
-        print("REND", playerName);
-        result = result .. formPlayerLinesForAllEncounters(playerName, RaidUsageLog["Raids"][RaidNo]["Encounters"]);
-    end
-
-    return result;
-end
-
----------------------------------------------------------------------------------------------------------------------------
---  RENDER FUNCS END
----------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 ---------------------------------------------------------------------------------------------------------------------------
 --  RAID FUNCS
@@ -486,8 +365,6 @@ function TWObs_OnEvent(...)
             inEncounter = false; 
         end
 
-        if dumps == nil then dumps = {}; end
-
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
         --print("RegPREFIX", regPrefixResult);
     end
@@ -504,13 +381,6 @@ function TWObs_OnEvent(...)
     if event == "READY_CHECK_CONFIRM" then        
         if arg1 == "player" and arg2 then shoutBuffs(); end
     end
-end
-
-function TWOBS_formatExport()
-    local formatedCSV = renderCSV(8);
-    print ("OUT", formatedCSV);
-
-    TWOBS_export_dump:SetText(formatedCSV);
 end
 
 SLASH_TWOBS1 = "/twobs"
