@@ -103,7 +103,6 @@
 				self:RegisterEvent("READY_CHECK");
 				self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 				self:RegisterEvent("PLAYER_REGEN_ENABLED");
-				
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();
@@ -118,4 +117,180 @@
 			</OnShow>
 		</Scripts>
     </Frame>
+
+	<Frame name="TWOBS_export" parent="UIParent" hidden="false" enableMouse="true" frameStrata="DIALOG" movable="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="1200" y="600" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<Color r="0" g="0" b="0" />
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Attributes>
+			<Attribute name="format" type="string" value="CSV" />
+		</Attributes>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="TWOBS_export_title" inherits="GameFontNormal" text="Export Table">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TWOBS_export_desc" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="TWOBS_export_close" inherits="UIPanelCloseButton">
+				<Size>
+					<AbsDimension x="40" y="40" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						TWOBS_export:Hide()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<ScrollFrame name="TWOBS_export_scrollframe" inherits="UIPanelScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="1120" y="540"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<EditBox name="TWOBS_export_dump" autofocus="false" multiline="true">
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+						<FontString inherits="GameFontNormal"/>
+						<Scripts>
+							<OnLoad>
+								self:SetSize(TWOBS_export_scrollframe:GetSize());
+							</OnLoad>
+							<OnEscapePressed>
+								self:ClearFocus();
+							</OnEscapePressed>
+							<OnEnterPressed>
+								self:ClearFocus();
+							</OnEnterPressed>
+							<OnEditFocusLost>
+								self:HighlightText(0,0);
+							</OnEditFocusLost>
+						</Scripts>
+					</EditBox>
+				</ScrollChild>
+				<Scripts>
+					<OnLoad>
+						self:SetScrollChild(TWOBS_export_dump);
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Button name="TWOBS_export_csv" inherits="GameMenuButtonTemplate" text="Сформировать CSV">
+				<Size>
+					<AbsDimension x="150" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="TWOBS_export">
+						<Offset>
+							<AbsDimension x="15" y="15" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TWOBS_export:SetAttribute("format", "CSV");
+						TWOBS_formatExport();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT");
+						GameTooltip:SetText("Вывод таблицы в формате CSV");
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parent_highlight" inherits="GameMenuButtonTemplate" text="Выделить текст">
+				<Size>
+					<AbsDimension x="150" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TWOBS_export_csv">
+						<Offset>
+							<AbsDimension x="5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TWOBS_export_dump:HighlightText();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				TWOBS_export_dump:SetText("Сканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...");
+			</OnShow>
+			<OnHide>
+
+			</OnHide>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
 </Ui>
