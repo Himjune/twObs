@@ -56,9 +56,9 @@ function importantsForPlayerOnAllEncounters(playerName, encountersList)
                 if RaidEtalons[usageName]["isImportant"] then
                     encounterImportantCnt = encounterImportantCnt +1;
 
-                    importantUsages[encounterImportantCnt] = {};
-                    importantUsages[encounterImportantCnt]["name"] = RaidEtalons[usageName]["displayName"];
-                    importantUsages[encounterImportantCnt]["EP"] = RaidEtalons[usageName]["price"];
+                    importantUsages[encIdx][encounterImportantCnt] = {};
+                    importantUsages[encIdx][encounterImportantCnt]["name"] = RaidEtalons[usageName]["displayName"];
+                    importantUsages[encIdx][encounterImportantCnt]["EP"] = RaidEtalons[usageName]["price"];
                     epSum = epSum + RaidEtalons[usageName]["price"];
                 end
             end
@@ -84,12 +84,16 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
 
     -- Should make: ,USAGE_NAME,EP
     maxPerEncounter, playerSum, importantUsagesPerEncounters = importantsForPlayerOnAllEncounters(playerName, encountersList);
+    dumps = importantUsagesPerEncounters;
+    print("D", dumps);
     
     for lineNo=1,maxPerEncounter do 
 
         for encNo=1,encAmount do
             if importantUsagesPerEncounters[encNo][lineNo] then
-                lines = lines .. CSV_DELIMITRIER .. importantUsagesPerEncounters[lineNo][encNo]["name"] .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["EP"];
+                print("INS", encNo, lineNo);
+                print("C", importantUsagesPerEncounters[encNo][lineNo]);
+                lines = lines .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["name"] .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["EP"];
             else
                 lines = lines .. CSV_DELIMITRIER .. CSV_DELIMITRIER;
             end
@@ -102,8 +106,6 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
     lines = lines .. playerSum .. CSV_DELIMITRIER;
     for encNo=1,encAmount do
         print("SL", lines);
-        dumps = importantUsagesPerEncounters;
-        print("D", dumps);
         lines = lines .. "" .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo]["epSum"] .. CSV_DELIMITRIER
     end
 
@@ -507,7 +509,7 @@ function TWObs_OnEvent(...)
 end
 
 function TWOBS_formatExport()
-    local formatedCSV = renderCSV(8);
+    local formatedCSV = renderCSV(1);
     print ("OUT", formatedCSV);
 
     TWOBS_export_dump:SetText(formatedCSV);
