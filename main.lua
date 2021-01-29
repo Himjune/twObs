@@ -344,14 +344,14 @@ function shoutBuffs()
         local strLeft = secondsLeftToStr(timeLeft);
         local enchName = "Ench:"..mainHandEnchantID; --getEnchantById(mainHandEnchantID);
 
-        shout("A", "Улучшение Правой Руки", mainHandEnchantID, strLeft);
+        shout("A", "Улучшение Правой Руки", "E"..mainHandEnchantID, strLeft);
     end
     if hasOffHandEnchant then
         local timeLeft = math.floor(offHandExpiration/1000);
         local strLeft = secondsLeftToStr(timeLeft);
         local enchName = "Ench:"..offHandEnchantId; --getEnchantById(offHandEnchantId);
 
-        shout("A", "Улучшение Левой Руки", offHandEnchantId, strLeft);
+        shout("A", "Улучшение Левой Руки", "E"..offHandEnchantId, strLeft);
     end
 end
 
