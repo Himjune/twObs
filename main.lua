@@ -6,7 +6,6 @@ local CSV_DELIMITRIER = "\t"
 -- TODO enter combat if no dbm pull emited
 function startEncounter()
     inEncounter = true;
-    --raidEncounterInit("ManualStart")
     shoutBuffs();
 end
 
@@ -301,7 +300,9 @@ function raidInitRaid(raidName)
 end
 
 function raidHandleEntering(instName)
-    raidInitRaid(instName);
+    if curRaid == nil or curRaid["RaidName"] ~= instName then
+        raidInitRaid(instName);
+    end
 end
 ---------------------------------------------------------------------------------------------------------------------------
 --  END RAID FUNCS
