@@ -155,6 +155,50 @@ end
 --  RAID FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
 
+function checkEncounterPlayers()
+    local aliveAmount = 0;
+    local engageAmount = 0;
+    local playersAmount = 0;
+
+    for player, playerStatus in pairs(curEncounter["EncPlayers"]) do
+        playersAmount = playersAmount+1;
+
+        if playerStatus["isAlive"] then 
+            aliveAmount = aliveAmount+1;
+        end
+
+        if playerStatus["isEngage"] then 
+            engageAmount = engageAmount+1;
+        end
+    end
+
+    print("a e p", aliveAmount, engageAmount, playersAmount);
+
+    -- all dead or nobody is fighting
+    if (aliveAmount == 0 or engageAmount == 0) and playersAmount>0 then
+        curEncounter["isActive"] = false;
+        message("EncounterEnded");
+    end
+end
+
+function handlePlayerStatus(playerStr, statusData)
+    local engageStr, aliveStr = strsplit("/", statusData);
+    local playerClass, playerName = strsplit("/", playerStr);
+
+    local isEngage = (engageStr == "ENGAGE");
+    local isAlive = (aliveStr == "ALIVE");
+
+    if curEncounter then
+        if curEncounter["EncPlayers"][playerName] == nil then
+            curEncounter["EncPlayers"][playerName] = {};
+        end
+
+        curEncounter["EncPlayers"][playerName]["isEngage"] = isEngage;
+        curEncounter["EncPlayers"][playerName]["isAlive"] = isAlive;
+    end
+
+    if curEncounter["isActive"] then checkEncounterPlayers(); end
+end
 
 function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList)
 
@@ -262,7 +306,8 @@ function raidEncounterInit(tarName)
 
         curRaid["Encounters"][encIdx]["EncName"] = tarName;
         curRaid["Encounters"][encIdx]["EncNo"] = encIdx;
-        curRaid["Encounters"][encIdx]["isActive"] = true;
+        curRaid["Encounters"][encIdx]["isActive"] = (encIdx>1);
+        curRaid["Encounters"][encIdx]["EncPlayers"] = {};
 
         local TS = GetServerTime();
         curRaid["Encounters"][encIdx]["TS"] = TS;
@@ -328,7 +373,7 @@ end
 -- SH|<CLASS>/<PLAYER>|I/<NAME>/<SpellId>/INSTANT?...
 function shout(spellType, spellName, spellId, spellInfo)
     local localizedClass, englishClass, classIndex = UnitClass("player");
-    local playerName, realm = UnitName("player")
+    local playerName, realm = UnitName("player");
 
     local msg = "SH|"..   englishClass.."/"..playerName   .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
     
@@ -466,6 +511,14 @@ function TWObs_OnEvent(...)
             if type == "EC" and message == "EC|END" then
                 endEncounter();
             end
+
+            -- player status:
+            -- "ST|<CLASS>/<NAME>|ENGAGE/ALIVE"
+            -- "ST|<CLASS>/<NAME>|AVOID/DEAD"
+            if type == "ST" then
+                local type, playerStr, statusData = strsplit("|", message);
+                handlePlayerStatus(playerStr, statusData);
+            end
         end
     end
     
@@ -508,12 +561,32 @@ function TWObs_OnEvent(...)
 
     if event == "PLAYER_REGEN_ENABLED" then
         local deadOrGhost = UnitIsDeadOrGhost("player");
-        print("REGEN_ON", deadOrGhost);
+        local localizedClass, englishClass, classIndex = UnitClass("player");
+        local playerName, realm = UnitName("player");
+    
+        local msg = "ST|"..   englishClass.."/"..playerName   .."|"..   "AVOID".."/";
+        if deadOrGhost then 
+            msg = msg.."DEAD";
+        else
+            msg = msg.."ALIVE";
+        end
+
+        C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
     end
     
     if event == "PLAYER_REGEN_DISABLED" then
         local deadOrGhost = UnitIsDeadOrGhost("player");
-        print("REGEN_OFF", deadOrGhost);
+        local localizedClass, englishClass, classIndex = UnitClass("player");
+        local playerName, realm = UnitName("player");
+    
+        local msg = "ST|"..   englishClass.."/"..playerName   .."|"..   "ENGAGE".."/";
+        if deadOrGhost then 
+            msg = msg.."DEAD";
+        else
+            msg = msg.."ALIVE";
+        end
+
+        C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
     end
 
     if event == "RAID_INSTANCE_WELCOME" then
