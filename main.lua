@@ -262,6 +262,7 @@ function raidEncounterInit(tarName)
 
         curRaid["Encounters"][encIdx]["EncName"] = tarName;
         curRaid["Encounters"][encIdx]["EncNo"] = encIdx;
+        curRaid["Encounters"][encIdx]["isActive"] = true;
 
         local TS = GetServerTime();
         curRaid["Encounters"][encIdx]["TS"] = TS;
@@ -330,7 +331,11 @@ function shout(spellType, spellName, spellId, spellInfo)
     local playerName, realm = UnitName("player")
 
     local msg = "SH|"..   englishClass.."/"..playerName   .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
-    C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
+    
+    local instName, instType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
+    if instType == "raid" then
+        C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
+    end
 end
 
 function shoutBuffs()
@@ -468,7 +473,8 @@ function TWObs_OnEvent(...)
         local unit, castGUID, spellId = select(2,...);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
 
-        if inEncounter then shout("I", spellName, spellId, "INSTANT&"); end
+        --if inEncounter then shout("I", spellName, spellId, "INSTANT&"); end
+        shout("I", spellName, spellId, "INSTANT&");
     end
 
     if event == "ADDON_LOADED" and arg1 == "twObs" then
