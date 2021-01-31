@@ -102,6 +102,9 @@
 				self:RegisterEvent("READY_CHECK");
 				self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 				self:RegisterEvent("PLAYER_REGEN_ENABLED");
+				self:RegisterEvent("PLAYER_REGEN_DISABLED");
+				self:RegisterEvent("RAID_INSTANCE_WELCOME");
+				
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();
@@ -117,7 +120,7 @@
 		</Scripts>
     </Frame>
 
-	<Frame name="TWOBS_export" parent="UIParent" hidden="false" enableMouse="true" frameStrata="DIALOG" movable="true" clampedToScreen="true">
+	<Frame name="TWOBS_export" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" movable="true" clampedToScreen="true">
 		<Size>
 			<AbsDimension x="1200" y="600" />
 		</Size>

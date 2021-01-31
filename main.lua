@@ -6,7 +6,7 @@ local CSV_DELIMITRIER = "\t"
 -- TODO enter combat if no dbm pull emited
 function startEncounter()
     inEncounter = true;
-    raidEncounterInit("ManualStart")
+    --raidEncounterInit("ManualStart")
     shoutBuffs();
 end
 
@@ -408,6 +408,9 @@ function handleEnteringWorld(isLogin, isReload)
     local name, type, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     local cnt = RaidUsageLog["Count"];
     
+    if type ~= "raid" then
+        return
+    end
 
     if isReload then
         if cnt > 0 then 
@@ -436,7 +439,7 @@ function handleEnteringWorld(isLogin, isReload)
 end
 
 function TWObs_OnEvent(...)
-    local event, arg1, arg2 = select(1,...);
+    local event, arg1, arg2, arg3, arg4 = select(1,...);
 
     if event == "CHAT_MSG_ADDON" then
         local prefix, message, chat, sender = select(2,...);
@@ -496,6 +499,20 @@ function TWObs_OnEvent(...)
     if event == "READY_CHECK" then
         local playerName, realm = UnitName("player")
         if arg1 == playerName then shoutBuffs(); end
+    end
+
+    if event == "PLAYER_REGEN_ENABLED" then
+        local deadOrGhost = UnitIsDeadOrGhost("player");
+        print("REGEN_ON", deadOrGhost);
+    end
+    
+    if event == "PLAYER_REGEN_DISABLED" then
+        local deadOrGhost = UnitIsDeadOrGhost("player");
+        print("REGEN_OFF", deadOrGhost);
+    end
+
+    if event == "RAID_INSTANCE_WELCOME" then
+        print("INST", arg1, arg2, arg3, arg4);
     end
 
     if event == "READY_CHECK_CONFIRM" then        
