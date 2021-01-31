@@ -1,19 +1,19 @@
 local curRaid = nil;
 local curEncounter = nil;
 
-local CSV_DELIMITRIER = ","
+local CSV_DELIMITRIER = "\t"
 
 -- TODO enter combat if no dbm pull emited
 function startEncounter()
     inEncounter = true;
-    ----print("startEncounter");
+    ------print("startEncounter");
     raidEncounterInit("ManualStart")
     shoutBuffs();
 end
 
 function endEncounter()
     inEncounter = false;
-    ----print("endEncounter");
+    ------print("endEncounter");
 
 end
 
@@ -22,12 +22,19 @@ end
 --  RENDER FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
 
+function floatToCSV(number)
+    local b = number.."";
+    local res = string.gsub(b,"%.",",")
+    print("FtC", b, res);
+    return res;
+end
+
 function formEncountersLine(RaidNo)
     local line = CSV_DELIMITRIER;
 
     for i, encounter in pairs(RaidUsageLog["Raids"][RaidNo]["Encounters"]) do
-        print("["..i.."];");
-        print("["..i.."] " .. encounter["EncName"]..';');
+        --print("["..i.."];");
+        --print("["..i.."] " .. encounter["EncName"]..';');
         line = line .. encounter["EncName"]..CSV_DELIMITRIER..'EP'..CSV_DELIMITRIER;
     end
 
@@ -36,7 +43,7 @@ end
 
 function insertWorldBuffsIntoRaidStart(playerName, encountersList)
     for encIdx, encounter in pairs(encountersList) do
-        --print("INS", encIdx, encounter, encounter["Usages"]);
+        ----print("INS", encIdx, encounter, encounter["Usages"]);
         if encounter["Usages"][playerName] then
             for usageName, usageInfo in pairs(encounter["Usages"][playerName]["Usages"]) do
                 -- TODO should add mechanism to check on what encounters player had WB
@@ -67,9 +74,9 @@ function importantsForPlayerOnAllEncounters(playerName, encountersList)
         importantUsages[encIdx]["Count"] = 0;
 
         epSum = 0;
-        print('eeID', encIdx, 'PL', playerName, encounter["Usages"][playerName], encounter["EncName"]);
+        --print('eeID', encIdx, 'PL', playerName, encounter["Usages"][playerName], encounter["EncName"]);
         if encounter["Usages"][playerName] then
-            print('eID', encIdx, 'PL', playerName, 'CNT', encounter["Usages"][playerName]["Count"]);
+            --print('eID', encIdx, 'PL', playerName, 'CNT', encounter["Usages"][playerName]["Count"]);
             for usageName, usageInfo in pairs(encounter["Usages"][playerName]["Usages"]) do
                 if RaidEtalons[usageName]["isImportant"] and (RaidEtalons[usageName]["isWorldBuff"] == false or encIdx==1) then
                     encounterImportantCnt = encounterImportantCnt +1;
@@ -98,7 +105,7 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
 
     local playerSum = 0;
 
-    --print("encAMOUNT", encAmount);
+    ----print("encAMOUNT", encAmount);
 
     insertWorldBuffsIntoRaidStart(playerName, encountersList);
 
@@ -109,9 +116,10 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
 
         for encNo=1,encAmount do
             if importantUsagesPerEncounters[encNo][lineNo] then
-                --print("INS", encNo, lineNo);
-                --print("C", importantUsagesPerEncounters[encNo][lineNo]);
-                lines = lines .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["name"] .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["EP"];
+                ----print("INS", encNo, lineNo);
+                ----print("C", importantUsagesPerEncounters[encNo][lineNo]);
+                local strEP = floatToCSV(importantUsagesPerEncounters[encNo][lineNo]["EP"]);
+                lines = lines .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["name"] .. CSV_DELIMITRIER .. strEP;
             else
                 lines = lines .. CSV_DELIMITRIER .. CSV_DELIMITRIER;
             end
@@ -121,16 +129,16 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
     end
 
     -- SUM LINE
+    lines = lines .. "\n";
     lines = lines .. playerSum .. CSV_DELIMITRIER;
     for encNo=1,encAmount do
-        --print("SL", lines);
-        lines = lines .. "" .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo]["epSum"] .. CSV_DELIMITRIER
+        local strEP = floatToCSV(importantUsagesPerEncounters[encNo]["epSum"]);
+        lines = lines .. "" .. CSV_DELIMITRIER .. strEP .. CSV_DELIMITRIER
     end
 
+    -- Two empty lines to separate player
     lines = lines .. "\n";
-    for encNo=1,encAmount do    -- Empty line to separate players
-        lines = lines .. "" .. CSV_DELIMITRIER .. "" .. CSV_DELIMITRIER
-    end
+    lines = lines .. "\n";
 
     lines = lines .. "\n";
     return lines;
@@ -142,7 +150,7 @@ function renderCSV(RaidNo)
     result = result .. formEncountersLine(RaidNo).."\n";
     
     for playerName, playerInfo in pairs(RaidUsageLog["Raids"][RaidNo]["Players"]) do
-        --print("REND", playerName);
+        ----print("REND", playerName);
         result = result .. formPlayerLinesForAllEncounters(playerName, RaidUsageLog["Raids"][RaidNo]["Encounters"]);
     end
 
@@ -163,7 +171,7 @@ end
 
 function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList)
 
-    ------print("REGl", usageId, "into", usageList, "for", playerClass, playerName);
+    --------print("REGl", usageId, "into", usageList, "for", playerClass, playerName);
 
     -- TODO probably should use full playerStr as identifier 
     if usageList[playerName] == nil then
@@ -181,7 +189,7 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
 
     -- TODO Probably i messed up everything by mixing GetTime() and GetServerTime()
     local encounterSeconds = GetTime() - curEncounter["TS"];
-    ------print("ENCtime", encounterSeconds, curEncounter["TS"], GetTime());
+    --------print("ENCtime", encounterSeconds, curEncounter["TS"], GetTime());
     local encounterTimeStr = string.format("%u:%u", math.floor(encounterSeconds/60), encounterSeconds%60);
 
     usageInstance = usageList[playerName]["Usages"][usageId];
@@ -241,7 +249,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
     local playerClass, playerName = strsplit("/", playerStr);
 
-    ----print("REG", usageType, usageName, usageId, usageInfo, "for", playerStr);
+    ------print("REG", usageType, usageName, usageId, usageInfo, "for", playerStr);
 
     local isBuff = (usageType == "A");
 
@@ -271,7 +279,7 @@ function raidEncounterInit(tarName)
         local encounterTitle = string.format ("%u) %s", encIdx, tarName);
         curRaid["Encounters"][encIdx]["EncName"] = encounterTitle;
         curRaid["Encounters"][encIdx]["EncNo"] = encIdx;
-        ------print("ENC", curRaid["Encounters"][encIdx]["EncName"]);
+        --------print("ENC", curRaid["Encounters"][encIdx]["EncName"]);
 
         local TS = GetServerTime();
         curRaid["Encounters"][encIdx]["TS"] = TS;
@@ -338,7 +346,7 @@ function shout(spellType, spellName, spellId, spellInfo)
     local playerName, realm = UnitName("player")
 
     local msg = "SH|"..   englishClass.."/"..playerName   .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
-    ------print("SHOUTED", msg);
+    --------print("SHOUTED", msg);
     C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
 end
 
@@ -346,9 +354,9 @@ function shoutBuffs()
     local i = 1;
     while UnitAura("player", i, "HELPFUL") do
 
-        --------print ("UA", UnitAura("player", i, "HELPFUL"));
+        ----------print ("UA", UnitAura("player", i, "HELPFUL"));
         local name, rank, icon, count, duration, expirationTime, _, unitCaster, _, spellId = UnitAura("player", i, "HELPFUL");
-        --------print ("UA2", expirationTime, spellId, name);
+        ----------print ("UA2", expirationTime, spellId, name);
 
         local timeLeft = expirationTime - GetTime();
         local strLeft = secondsLeftToStr(timeLeft);
@@ -404,9 +412,9 @@ end
 function handleDBMevent(...)
     local dpre, dtim, dinst, dtar = select(1, ...);
     if dpre == "PT" then
-        ------print("PULL:",select(2,...));
+        --------print("PULL:",select(2,...));
         if dtar then
-            ------print("TAR:", dtar); 
+            --------print("TAR:", dtar); 
         else
             dtar = "Unknown";
         end
@@ -420,7 +428,7 @@ function handleEnteringWorld(isLogin, isReload)
     local name, type, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     local cnt = RaidUsageLog["Count"];
     
-    ------print("ENTERING", name, "C", cnt, "L", isLogin, "R", isReload);
+    --------print("ENTERING", name, "C", cnt, "L", isLogin, "R", isReload);
 
     if isReload then
         if cnt > 0 then 
@@ -446,38 +454,38 @@ function handleEnteringWorld(isLogin, isReload)
         end
     end
 
-    ------print("NOW RAID", curRaid, curRaid["RaidName"]);
-    ------print("NOW ENCOUNTER", curEncounter, curEncounter["EncName"]);
+    --------print("NOW RAID", curRaid, curRaid["RaidName"]);
+    --------print("NOW ENCOUNTER", curEncounter, curEncounter["EncName"]);
 end
 
 function TWObs_OnEvent(...)
     local event, arg1, arg2 = select(1,...);
-    --------print("EVE", event);
+    ----------print("EVE", event);
 
     if event == "CHAT_MSG_ADDON" then
         local prefix, message, chat, sender = select(2,...);
 
-        --------print("MSG", prefix);
+        ----------print("MSG", prefix);
 
         if prefix == "D4C" then
             handleDBMevent(strsplit("\t", message));
         end
 
         if prefix == "TWOBS" then
-            ------print("TWmsg", message);
+            --------print("TWmsg", message);
             local type, playerStr, usageData = strsplit("|", message);
 
             if type == "SH" then
-                ----print("recSH", playerStr, usageData);
+                ------print("recSH", playerStr, usageData);
                 raidRegisterPlayerUsage(playerStr, usageData);
             end
 
             if type == "EC" and message == "EC|START" then
-                ------print("EC", message);
+                --------print("EC", message);
                 startEncounter();
             end
             if type == "EC" and message == "EC|END" then
-                ------print("EC", message);
+                --------print("EC", message);
                 endEncounter();
             end
         end
@@ -485,7 +493,7 @@ function TWObs_OnEvent(...)
     
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
         local unit, castGUID, spellId = select(2,...);
-        --------print("SCs", unit, castGUID, spellId);
+        ----------print("SCs", unit, castGUID, spellId);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
 
         if inEncounter then shout("I", spellName, spellId, "INSTANT&"); end
@@ -509,7 +517,7 @@ function TWObs_OnEvent(...)
         if dumps == nil then dumps = {}; end
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
-        ----print("RegPREFIX", regPrefixResult);
+        ------print("RegPREFIX", regPrefixResult);
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
@@ -528,7 +536,7 @@ end
 
 function TWOBS_formatExport()
     local formatedCSV = renderCSV(1);
-    --print ("OUT", formatedCSV);
+    ----print ("OUT", formatedCSV);
 
     TWOBS_export_dump:SetText(formatedCSV);
 end
@@ -542,14 +550,14 @@ SlashCmdList["TWOBS"] = function(msg)
     end
    
     if msg == "end" then
-        ------print("endCommand");
+        --------print("endCommand");
         C_ChatInfo.SendAddonMessage("TWOBS", "EC|END", "RAID");
         done = true;
     end
      
     if msg == "stat" then
-        ------print("endCommand");
-        ----print("inEncounter", inEncounter)
+        --------print("endCommand");
+        ------print("inEncounter", inEncounter)
         done = true;
     end
 
