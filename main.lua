@@ -28,9 +28,8 @@ end
 function formEncountersLine(RaidNo)
     local line = CSV_DELIMITRIER;
 
-    for i, encounter in pairs(RaidUsageLog["Raids"][RaidNo]["Encounters"]) do
-        
-        line = line .. encounter["EncName"]..CSV_DELIMITRIER..'EP'..CSV_DELIMITRIER;
+    for i, encounter in pairs(RaidUsageLog["Raids"][RaidNo]["Encounters"]) do   
+        line = line .. "(" .. encounter["EncNo"] .. ")" .. encounter["EncName"] .. CSV_DELIMITRIER .. 'EP' .. CSV_DELIMITRIER;
     end
 
     return line;
@@ -261,8 +260,7 @@ function raidEncounterInit(tarName)
 
     curRaid["Encounters"][encIdx] = {};
 
-        local encounterTitle = string.format ("%u) %s", encIdx, tarName);
-        curRaid["Encounters"][encIdx]["EncName"] = encounterTitle;
+        curRaid["Encounters"][encIdx]["EncName"] = tarName;
         curRaid["Encounters"][encIdx]["EncNo"] = encIdx;
 
         local TS = GetServerTime();
