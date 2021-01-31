@@ -425,7 +425,7 @@ function handleEnteringWorld(isLogin, isReload)
     -- NO RELOAD
     else
         if cnt > 0 then 
-            if RaidUsageLog["Raids"][cnt] ~= name then
+            if RaidUsageLog["Raids"][cnt]["RaidName"] ~= name then
                 raidHandleEntering(name);
             else
                 curRaid = RaidUsageLog["Raids"][cnt];
