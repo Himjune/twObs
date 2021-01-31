@@ -39,9 +39,10 @@ function insertWorldBuffsIntoRaidStart(playerName, encountersList)
         --print("INS", encIdx, encounter, encounter["Usages"]);
         if encounter["Usages"][playerName] then
             for usageName, usageInfo in pairs(encounter["Usages"][playerName]["Usages"]) do
+                -- TODO should add mechanism to check on what encounters player had WB
                 if RaidEtalons[usageName]["isImportant"] and RaidEtalons[usageName]["isWorldBuff"] and 
                     (encountersList[1]["Usages"][playerName] == nil or encountersList[1]["Usages"][playerName]["Usages"][usageName] == nil) then
-                        
+
                     raidRegisterPlayerInUsageList(encounter["Usages"][playerName]["Class"], playerName, usageName, "MOVED_WB_FROM?"..encIdx, encountersList[1]["Usages"]);
                 end
             end
