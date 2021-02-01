@@ -425,18 +425,31 @@ end
 --  MAIN EVENTS HANDLING
 ---------------------------------------------------------------------------------------------------------------------------
 
+typesDict = {
+    ["I"] = "МГНВ",
+    ["A"] = "БАФФ",
+}
 
-iEvent = 0;
-function AddEventStr(msg)
-    local i = iEvent;
-    local frame = CreateFrame('Button', "EventStr" .. i, _G["Events_scrollframe_container"], "EventStrTemplate");
-    if i > 0 then
-        _G["EventStr" .. i]:SetPoint("TOPLEFT", _G["EventStr" .. i-1], "BOTTOMLEFT", 0, -2);
+local ETALON_BTN_PREFIX = "EtalonStr-"
+function AddEtalonStr(i, isImportant, isNew, isWB, type, etalonName, displayName, EP)
+    local frame = CreateFrame('Button', ETALON_BTN_PREFIX .. i, _G["Etalons_scrollframe_container"], "EtalonStrTemplate");
+    if i > 1 then
+        _G[ETALON_BTN_PREFIX .. i]:SetPoint("TOPLEFT", _G[ETALON_BTN_PREFIX .. i-1], "BOTTOMLEFT", 0, -2);
     else
-        _G["EventStr" .. i]:SetPoint("TOPLEFT", _G["Events_scrollframe_container"], "TOPLEFT", 0, -10);
+        _G[ETALON_BTN_PREFIX .. i]:SetPoint("TOPLEFT", _G["Etalons_scrollframe_container"], "TOPLEFT", 0, -10);
     end
-    _G["EventStr" .. i .. "Info"]:SetText(i .. ") " .. msg);
-    iEvent = iEvent + 1;
+
+    local displayNameStr = displayName;
+    if isNew then displayNameStr = "* "..displayNameStr; end
+
+    --print(_G[ETALON_BTN_PREFIX .. i .. "Important"], _G[ETALON_BTN_PREFIX .. i .. "Important"]:GetChecked());
+    frame:SetAttribute("usageId", etalonName);
+    _G[ETALON_BTN_PREFIX .. i .. "Important"]:SetChecked(isImportant);
+    _G[ETALON_BTN_PREFIX .. i .. "Id"]:SetText(etalonName);
+    _G[ETALON_BTN_PREFIX .. i .. "Name"]:SetText(displayNameStr);
+    _G[ETALON_BTN_PREFIX .. i .. "Type"]:SetText(typesDict[type]);
+    _G[ETALON_BTN_PREFIX .. i .. "WB"]:SetChecked(isWB);
+    _G[ETALON_BTN_PREFIX .. i .. "EP"]:SetText(EP);
     frame:Show();
 end
 
@@ -604,6 +617,19 @@ function TWOBS_formatExport()
     TWOBS_export_dump:SetText(formatedCSV);
 end
 
+function TWOBS_showEtalons()
+
+    local idx = 1;
+    for etalonName, etalonInfo in pairs(RaidEtalons) do
+        AddEtalonStr(idx, etalonInfo["isImportant"], etalonInfo["isNew"], etalonInfo["isWorldBuff"], etalonInfo["Type"], etalonName, etalonInfo["displayName"], etalonInfo["price"]);
+        idx = idx+1;
+    end
+end
+
+function TWOBS_EtalonButton_OnClick(bName, button)
+    print(bName, button);
+end
+
 SLASH_TWOBS1 = "/twobs"
 SlashCmdList["TWOBS"] = function(msg)
     local done = false;
@@ -626,6 +652,11 @@ SlashCmdList["TWOBS"] = function(msg)
         done = true;
     end
 
+    if msg == "eta" then
+    _G["TWObs_Frame"]:Show();
+        done = true;
+    end
+    
     if done then
         return;
     end

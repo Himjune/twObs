@@ -1,21 +1,104 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-    <Button name="EventStrTemplate" virtual="true">
+    <Button name="EtalonStrTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="580" y="15"/>
 		</Size>
 		<Attributes>
-			<Attribute name="excluded" type="boolean" value="false" />
+			<Attribute name="usageId" type="string" value="" />
 		</Attributes>
 		<Frames>
+
+				<CheckButton name="$parentImportant" inherits="OptionsCheckButtonTemplate"  checked="true">
+					<HitRectInsets>
+						<AbsInset left="10" right="10" top="10" bottom="10" />
+					</HitRectInsets>
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+							<Offset>
+								<AbsDimension x="5" y="2.5" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+						</OnClick>
+					</Scripts>
+				</CheckButton>
+
+				<CheckButton name="$parentWB" inherits="OptionsCheckButtonTemplate"  checked="true">
+					<HitRectInsets>
+						<AbsInset left="10" right="10" top="10" bottom="10" />
+					</HitRectInsets>
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentImportant">
+							<Offset>
+								<AbsDimension x="470" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+						</OnClick>
+					</Scripts>
+				</CheckButton>
 		</Frames>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString name="$parentInfo" inherits="GameFontHighlight" justifyH="LEFT">
+
+				<FontString name="$parentId" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
 							<Offset>
-								<AbsDimension x="10" y="2"/>
+								<AbsDimension x="20" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="350" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentId">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="$parentType" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size>
+						<AbsDimension x="60" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentName">
+							<Offset>
+								<AbsDimension x="0" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="$parentEP" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Size>
+						<AbsDimension x="50" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentType">
+							<Offset>
+								<AbsDimension x="0" y="0" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -28,6 +111,7 @@
 			</OnLoad>
 			<OnClick>
 				PlaySound(856);
+				TWOBS_EtalonButton_OnClick(self:GetName(), button);
 			</OnClick>
 		</Scripts>
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>

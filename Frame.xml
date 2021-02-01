@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script File="main.lua"/>
 		
-	<Frame name="TWObs_Frame" parent="UIParent" hidden="true" enableMouse="true" toplevel="true" movable="true" clampedToScreen="true">
+	<Frame name="TWObs_Frame" parent="UIParent" hidden="false" enableMouse="true" toplevel="true" movable="true" clampedToScreen="true">
 		<Size>
 			<AbsDimension x="600" y="480" />
 		</Size>
@@ -36,7 +36,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						Print_Buffs();
+						TWOBS_showEtalons();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -59,33 +59,21 @@
 				</Scripts>
 			</Button>
 
-            <ScrollFrame name="EventsFrame" inherits="UIPanelScrollFrameTemplate">
+            <ScrollFrame name="EtalonsFrame" inherits="UIPanelScrollFrameTemplate">
                 <Size>
-                    <AbsDimension x="550" y="320" />
+                    <AbsDimension x="550" y="420" />
                 </Size>
                 <Anchors>
-                    <Anchor point="CENTER" relativePoint="CENTER" relativeTo="TWObs_Frame">
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="TWObs_Frame">
                         <Offset>
-                            <AbsDimension x="-12" y="0"/>
+                            <AbsDimension x="15" y="15"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
-                <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-                    <Color r="0" g="1" b="0" />
-                    <BackgroundInsets>
-                        <AbsInset left="11" right="12" top="12" bottom="11" />
-                    </BackgroundInsets>
-                    <TileSize>
-                        <AbsValue val="32" />
-                    </TileSize>
-                    <EdgeSize>
-                        <AbsValue val="32" />
-                    </EdgeSize>
-                </Backdrop>
                 <ScrollChild>
-                    <Frame name="Events_scrollframe_container">
+                    <Frame name="Etalons_scrollframe_container">
                         <Size>
-                            <AbsDimension x="550" y="300" />
+                            <AbsDimension x="550" y="380" />
                         </Size>
                     </Frame>
                 </ScrollChild>
@@ -104,7 +92,7 @@
 				self:RegisterEvent("PLAYER_REGEN_ENABLED");
 				self:RegisterEvent("PLAYER_REGEN_DISABLED");
 				self:RegisterEvent("RAID_INSTANCE_WELCOME");
-				
+				TWOBS_showEtalons();				
 			</OnLoad>
 			<OnMouseDown>
 				self:StartMoving();
@@ -295,4 +283,5 @@
 		</Scripts>
 	</Frame>
 
+	
 </Ui>
