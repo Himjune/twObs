@@ -1,5 +1,6 @@
 local curRaid = nil;
 local curEncounter = nil;
+local curEtalonEdit = nil;
 
 local CSV_DELIMITRIER = "\t"
 
@@ -628,6 +629,10 @@ end
 
 function TWOBS_EtalonButton_OnClick(bName, button)
     print(bName, button);
+end
+
+function TWOBS_EtalonButton_Save()
+    print("save");
 end
 
 SLASH_TWOBS1 = "/twobs"

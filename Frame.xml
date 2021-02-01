@@ -283,5 +283,251 @@
 		</Scripts>
 	</Frame>
 
-	
+	<Frame name="TWOBS_etalon_edit_popup" frameStrata="DIALOG" enableMouse="true" parent="UIParent" hidden="false" movable="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="300" y="175"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+
+		<Frames>
+			<EditBox name="TWOBS_etalon_edit_name" inherits="InputBoxTemplate" letters="15">
+				<Size>
+					<AbsDimension x="250" y="15" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="TWOBS_etalon_edit_popup" relativePoint="TOP">
+						<Offset>
+							<AbsDimension x="0" y="-30" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetAutoFocus(false);
+						self:SetText("Name");
+					</OnLoad>
+					<OnEnterPressed>
+						self:ClearFocus();
+					</OnEnterPressed>
+				</Scripts>
+			</EditBox>
+
+			<CheckButton name="TWOBS_etalon_edit_important" inherits="OptionsCheckButtonTemplate" checked="true">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0" />
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOM" relativeTo="TWOBS_etalon_edit_name">
+						<Offset>
+							<AbsDimension x="-10" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="TWOBS_etalon_edit_wb" inherits="OptionsCheckButtonTemplate" checked="true">
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="0" />
+				</HitRectInsets>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="TWOBS_etalon_edit_important">
+						<Offset>
+							<AbsDimension x="0" y="-5" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<EditBox name="TWOBS_etalon_edit_EP" inherits="InputBoxTemplate" letters="15">
+				<Size>
+					<AbsDimension x="50" y="15" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="TWOBS_etalon_edit_name" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="-8" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetAutoFocus(false);
+						self:SetText("0");
+					</OnLoad>
+					<OnEnterPressed>
+						self:ClearFocus();
+					</OnEnterPressed>
+				</Scripts>
+			</EditBox>
+
+			<Button name="TWOBS_etalon_edit_cancel" inherits="GameMenuButtonTemplate" text="Отмена">
+				<Size>
+					<AbsDimension x="75" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						self:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="TWOBS_etalon_edit_confirm" inherits="GameMenuButtonTemplate" text="Сохранить">
+				<Size>
+					<AbsDimension x="75" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						TWOBS_EtalonButton_Save();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="280" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="TWOBS_etalon_edit_title" inherits="GameFontNormal" text="Применение: ХХХХХ">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="TWOBS_etalon_edit_important_label" inherits="GameFontNormal" justifyH="RIGHT" text="Важно:">
+					<Size>
+						<AbsDimension x="80" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="TWOBS_etalon_edit_important">
+							<Offset>
+								<AbsDimension x="-5" y="-5" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="TWOBS_etalon_edit_wb_label" inherits="GameFontNormal" justifyH="RIGHT" text="World Buff:">
+					<Size>
+						<AbsDimension x="80" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="TWOBS_etalon_edit_wb">
+							<Offset>
+								<AbsDimension x="-5" y="-5" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="TWOBS_etalon_edit_EP_label" inherits="GameFontNormal" justifyH="RIGHT" text="EP:">
+					<Size>
+						<AbsDimension x="80" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="TWOBS_etalon_edit_EP">
+							<Offset>
+								<AbsDimension x="-10" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				
+				<FontString name="TWOBS_etalon_edit_type" inherits="GameFontHighlight" justifyH="CENTER" text="ХХХХ">
+					<Size>
+						<AbsDimension x="50" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="TWOBS_etalon_edit_EP">
+							<Offset>
+								<AbsDimension x="0" y="-17" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+				<FontString name="TWOBS_etalon_edit_type_label" inherits="GameFontNormal" justifyH="RIGHT" text="Тип:">
+					<Size>
+						<AbsDimension x="80" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="TWOBS_etalon_edit_type">
+							<Offset>
+								<AbsDimension x="-10" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+
+			</Layer>
+		</Layers>
+		
+		
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
+			<OnShow>
+			</OnShow>
+		</Scripts>
+	</Frame>
+
 </Ui>
