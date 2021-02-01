@@ -433,11 +433,16 @@ typesDict = {
 
 local ETALON_BTN_PREFIX = "EtalonStr-"
 function AddEtalonStr(i, isImportant, isNew, isWB, type, etalonName, displayName, EP)
-    local frame = CreateFrame('Button', ETALON_BTN_PREFIX .. i, _G["Etalons_scrollframe_container"], "EtalonStrTemplate");
+    local frame = _G[ETALON_BTN_PREFIX .. i];
+    if frame == nil then 
+        CreateFrame('Button', ETALON_BTN_PREFIX .. i, _G["Etalons_scrollframe_container"], "EtalonStrTemplate");
+        frame = _G[ETALON_BTN_PREFIX .. i];
+    end
+
     if i > 1 then
-        _G[ETALON_BTN_PREFIX .. i]:SetPoint("TOPLEFT", _G[ETALON_BTN_PREFIX .. i-1], "BOTTOMLEFT", 0, -2);
+        frame:SetPoint("TOPLEFT", _G[ETALON_BTN_PREFIX .. i-1], "BOTTOMLEFT", 0, -2);
     else
-        _G[ETALON_BTN_PREFIX .. i]:SetPoint("TOPLEFT", _G["Etalons_scrollframe_container"], "TOPLEFT", 0, -10);
+        frame:SetPoint("TOPLEFT", _G["Etalons_scrollframe_container"], "TOPLEFT", 0, -10);
     end
 
     local displayNameStr = displayName;
@@ -619,6 +624,11 @@ function TWOBS_formatExport()
 end
 
 function TWOBS_showEtalons()
+    local kids = { _G["Etalons_scrollframe_container"]:GetChildren() };
+
+    for _, child in ipairs(kids) do
+        child:Hide();
+    end
 
     local idx = 1;
     for etalonName, etalonInfo in pairs(RaidEtalons) do
@@ -629,7 +639,6 @@ end
 
 function TWOBS_EtalonButton_OnClick(bName, button)
     curEtalonEdit = _G[bName]:GetAttribute("usageId");
-    print(curEtalonEdit);
 
     local curEtalonInstance = RaidEtalons[curEtalonEdit];
 
@@ -647,7 +656,34 @@ function TWOBS_EtalonButton_OnClick(bName, button)
 end
 
 function TWOBS_EtalonButton_Save()
-    print("save");
+    local isValid = true;
+
+    local newName = _G["TWOBS_etalon_edit_name"]:GetText();
+    if newName == "" then
+        message("Имя не может быть пустым!");
+        isValid = false;
+
+        return;
+    end
+
+    local newEP = _G["TWOBS_etalon_edit_EP"]:GetText();
+    newEP = tonumber(newEP);
+    if newEP == nil then
+        message("Значение ЕР ошибочно (нужно число, с точкой для дробей)!");
+        isValid = false;
+
+        return;
+    end
+
+    
+    RaidEtalons[curEtalonEdit]["displayName"] = newName;
+    RaidEtalons[curEtalonEdit]["isImportant"] = _G["TWOBS_etalon_edit_important"]:GetChecked();
+    RaidEtalons[curEtalonEdit]["isWorldBuff"] = _G["TWOBS_etalon_edit_wb"]:GetChecked();
+    RaidEtalons[curEtalonEdit]["price"] = newEP;
+    RaidEtalons[curEtalonEdit]["isNew"] = false;
+    
+    TWOBS_showEtalons();
+    TWOBS_etalon_edit_popup:Hide();
 end
 
 SLASH_TWOBS1 = "/twobs"
