@@ -107,7 +107,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:RegisterForClicks("AnyDown");
+				self:RegisterForClicks("LeftButtonDown");
 			</OnLoad>
 			<OnClick>
 				PlaySound(856);

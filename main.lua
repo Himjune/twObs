@@ -628,7 +628,22 @@ function TWOBS_showEtalons()
 end
 
 function TWOBS_EtalonButton_OnClick(bName, button)
-    print(bName, button);
+    curEtalonEdit = _G[bName]:GetAttribute("usageId");
+    print(curEtalonEdit);
+
+    local curEtalonInstance = RaidEtalons[curEtalonEdit];
+
+    _G["TWOBS_etalon_edit_name"]:SetText(curEtalonInstance["displayName"]);
+
+    _G["TWOBS_etalon_edit_title"]:SetText("Применение: " .. curEtalonEdit);
+    _G["TWOBS_etalon_edit_type"]:SetText(typesDict[curEtalonInstance["Type"]]);
+
+    _G["TWOBS_etalon_edit_important"]:SetChecked(curEtalonInstance["isImportant"]);
+    _G["TWOBS_etalon_edit_wb"]:SetChecked(curEtalonInstance["isWorldBuff"]);
+
+    _G["TWOBS_etalon_edit_EP"]:SetText(curEtalonInstance["price"]);
+    
+    _G["TWOBS_etalon_edit_popup"]:Show();
 end
 
 function TWOBS_EtalonButton_Save()
