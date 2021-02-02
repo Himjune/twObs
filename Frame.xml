@@ -76,20 +76,6 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame name="TWOBS_class_dropdown2" inherits="UIDropDownMenuTemplate" id="1">
-				<Anchors>
-					<Anchor point="TOP" relativePoint="TOP" relativeTo="TWOBS_class_dropdown">
-						<Offset>
-							<AbsDimension x="0" y="-15" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						UIDropDownMenu_Initialize(self, TWOBS_class_dropdown_OnLoad2);
-					</OnLoad>
-				</Scripts>
-			</Frame>
 
             <ScrollFrame name="EtalonsFrame" inherits="UIPanelScrollFrameTemplate">
                 <Size>
