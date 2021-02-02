@@ -639,10 +639,20 @@ function TWOBS_showEtalons()
         child:Hide();
     end
 
-    local idx = 1;
+    local idx = 0;
+    local filter = "ALL";
+    if twobsSettings and twobsSettings["classFilter"] then filter = twobsSettings["classFilter"]; end
+
     for etalonName, etalonInfo in pairs(RaidEtalons) do
-        AddEtalonStr(idx, etalonInfo["isImportant"], etalonInfo["isNew"], etalonInfo["isWorldBuff"], etalonInfo["Type"], etalonName, etalonInfo["displayName"], etalonInfo["price"]);
-        idx = idx+1;
+        if filter == "ALL" or etalonInfo["class"][filter] then
+            idx = idx+1;
+            AddEtalonStr(idx, etalonInfo["isImportant"], etalonInfo["isNew"], etalonInfo["isWorldBuff"], etalonInfo["Type"], etalonName, etalonInfo["displayName"], etalonInfo["price"]);
+        end
+    end
+
+    --TWOBS_etalons_nodata_label:Hide();
+    if idx == 0 then
+        --TWOBS_etalons_nodata_label:Show();
     end
 end
 
@@ -695,10 +705,19 @@ function TWOBS_EtalonButton_Save()
     TWOBS_etalon_edit_popup:Hide();
 end
 
-function selectClassFilter(self)
+function selectClassFilter(self, dropDownFrame)
     print("sCF", self.value);
     twobsSettings["classFilter"] = self.value;
-    UIDropDownMenu_SetSelectedValue(_G["TWOBS_class_dropdown"], self.value);
+    UIDropDownMenu_SetSelectedValue(dropDownFrame, self.value);
+
+    TWOBS_showEtalons();
+end
+
+function scfEtalons(self)
+    selectClassFilter(self, _G["TWOBS_etalons_class_dropdown"]);
+end
+function scfExport(self)
+    selectClassFilter(self, _G["TWOBS_export_class_dropdown"]);
 end
 
 function addDropDownButton(text, value, func)
@@ -712,16 +731,20 @@ function addDropDownButton(text, value, func)
 end
 
 function TWOBS_class_dropdown_OnLoad(self)
-    addDropDownButton("Все классы", "ALL", selectClassFilter);
-    addDropDownButton("Войны", "WARRIOR", selectClassFilter);
-    addDropDownButton("Жрецы", "PRIEST", selectClassFilter);
-    addDropDownButton("Маги", "MAGE", selectClassFilter);
-    addDropDownButton("Колдуны", "WARLOCK", selectClassFilter);
-    addDropDownButton("Разбойники", "ROUGE", selectClassFilter);
-    addDropDownButton("Друиды", "DRUID", selectClassFilter);
-    addDropDownButton("Паладины", "PALADIN", selectClassFilter);
-    addDropDownButton("Шаманы", "WARLOCK", selectClassFilter);
-    addDropDownButton("Охотники", "HUNTER", selectClassFilter);
+    local func = nil;
+    if self == _G["TWOBS_etalons_class_dropdown"] then func = scfEtalons; end
+    if self == _G["TWOBS_export_class_dropdown"] then func = scfExport; end
+
+    addDropDownButton("Все классы", "ALL", func);
+    addDropDownButton("Войны", "WARRIOR", func);
+    addDropDownButton("Жрецы", "PRIEST", func);
+    addDropDownButton("Маги", "MAGE", func);
+    addDropDownButton("Колдуны", "WARLOCK", func);
+    addDropDownButton("Разбойники", "ROGUE", func);
+    addDropDownButton("Друиды", "DRUID", func);
+    addDropDownButton("Паладины", "PALADIN", func);
+    addDropDownButton("Шаманы", "WARLOCK", func);
+    addDropDownButton("Охотники", "HUNTER", func);
     
     local selected = "ALL";
     if twobsSettings and twobsSettings["classFilter"] then

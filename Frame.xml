@@ -62,7 +62,7 @@
 				</Scripts>
 			</Button>
 
-			<Frame name="TWOBS_class_dropdown" inherits="UIDropDownMenuTemplate" id="1">
+			<Frame name="TWOBS_etalons_class_dropdown" inherits="UIDropDownMenuTemplate" id="1">
 				<Anchors>
 					<Anchor point="TOP" relativePoint="TOP" relativeTo="TWObs_Frame">
 						<Offset>
