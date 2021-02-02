@@ -2,7 +2,7 @@
 ## Title: TechWolfRaidObs
 ## Author: MouShindeIru
 ## Version: 0.1
-## SavedVariables: RaidUsageLog, RaidEtalons, inEncounter, Settings
+## SavedVariables: RaidUsageLog, RaidEtalons, twobsSettings, inEncounter
 
 Templates.xml
 Frame.xml

@@ -12,6 +12,8 @@ end
 
 function endEncounter()
     inEncounter = false;
+    curEncounter["isActive"] = false;
+    print("ending encounter");
 end
 
 
@@ -177,8 +179,8 @@ function checkEncounterPlayers()
 
     -- all dead or nobody is fighting
     if (aliveAmount == 0 or engageAmount == 0) and playersAmount>0 then
-        if Settings["encAutoEnd"] then curEncounter["isActive"] = false; end
-        if Settings["encEndMsg"] then message("EncounterEnded"); end
+        if twobsSettings["encAutoEnd"] then curEncounter["isActive"] = false; end
+        if twobsSettings["encEndMsg"] then message("EncounterEnded"); end
     end
 end
 
@@ -285,7 +287,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     if etalon["isWorldBuff"] then
         if curRaid then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Encounters"][1]); end
     else
-        if curEncounter then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
+        if curEncounter and curEncounter["isActive"] then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
     if etalon["Type"] == "A" then
@@ -316,6 +318,7 @@ function raidEncounterInit(tarName)
         curRaid["Encounters"][encIdx]["MaxCount"] = 0;
 
     curEncounter = curRaid["Encounters"][encIdx];
+    print("encINIT", curEncounter["EncName"], curEncounter["isActive"])
 end
 
 function raidInitRaid(raidName)
@@ -377,7 +380,7 @@ function shout(spellType, spellName, spellId, spellInfo)
     local msg = "SH|"..   englishClass.."/"..playerName   .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
     
     local instName, instType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
-    if instType == "raid" then
+    if twobsSettings["shoutEverywhere"] or instType == "raid" then
         C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
     end
 end
@@ -562,13 +565,12 @@ function TWObs_OnEvent(...)
             inEncounter = false; 
         end
 
-        if dumps == nil then dumps = {}; end
-
-        if Settings == nil then
-            Settings = {};
-            Settings["encAutoEnd"] = false;
-            Settings["encEndMsg"] = false;
-            Settings["classFilter"] = "ALL";
+        if twobsSettings == nil then
+            twobsSettings = {};
+            twobsSettings["encAutoEnd"] = false;
+            twobsSettings["encEndMsg"] = false;
+            twobsSettings["classFilter"] = "ALL";
+            twobsSettings["shoutEverywhere"] = false,
         end
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
