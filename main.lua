@@ -695,6 +695,41 @@ function TWOBS_EtalonButton_Save()
     TWOBS_etalon_edit_popup:Hide();
 end
 
+function selectClassFilter(self)
+    print("sCF", self.value);
+    twobsSettings["classFilter"] = self.value;
+    UIDropDownMenu_SetSelectedValue(_G["TWOBS_class_dropdown"], self.value);
+end
+
+function addDropDownButton(text, value, func)
+    local info = UIDropDownMenu_CreateInfo()
+
+    info.text = text;
+    info.checked = false;
+    info.value = value;
+    info.func = func;
+    UIDropDownMenu_AddButton(info);
+end
+
+function TWOBS_class_dropdown_OnLoad(self)
+    addDropDownButton("Все классы", "ALL", selectClassFilter);
+    addDropDownButton("Войны", "WARRIOR", selectClassFilter);
+    addDropDownButton("Жрецы", "PRIEST", selectClassFilter);
+    addDropDownButton("Маги", "MAGE", selectClassFilter);
+    addDropDownButton("Колдуны", "WARLOCK", selectClassFilter);
+    addDropDownButton("Разбойники", "ROUGE", selectClassFilter);
+    addDropDownButton("Друиды", "DRUID", selectClassFilter);
+    addDropDownButton("Паладины", "PALADIN", selectClassFilter);
+    addDropDownButton("Шаманы", "WARLOCK", selectClassFilter);
+    addDropDownButton("Охотники", "HUNTER", selectClassFilter);
+    
+    local selected = "ALL";
+    if twobsSettings and twobsSettings["classFilter"] then
+        selected = twobsSettings["classFilter"];
+    end
+    UIDropDownMenu_SetSelectedValue(self, selected);
+end
+
 SLASH_TWOBS1 = "/twobs"
 SlashCmdList["TWOBS"] = function(msg)
     local done = false;
