@@ -570,7 +570,7 @@ function TWObs_OnEvent(...)
             twobsSettings["encAutoEnd"] = false;
             twobsSettings["encEndMsg"] = false;
             twobsSettings["classFilter"] = "ALL";
-            twobsSettings["shoutEverywhere"] = false,
+            twobsSettings["shoutEverywhere"] = false;
         end
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
