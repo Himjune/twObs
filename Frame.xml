@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
 	<Script File="main.lua"/>
 		
-	<Frame name="TWObs_Frame" parent="UIParent" hidden="false" enableMouse="true" toplevel="true" movable="true" clampedToScreen="true">
+	<Frame name="TWObs_Frame" parent="UIParent" hidden="true" enableMouse="true" toplevel="true" movable="true" clampedToScreen="true">
 		<Size>
 			<AbsDimension x="600" y="480" />
 		</Size>
