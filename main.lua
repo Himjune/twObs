@@ -475,7 +475,7 @@ function handleEnteringWorld(isLogin, isReload)
     local cnt = RaidUsageLog["Count"];
     
     if type ~= "raid" then
-        return
+    --    return
     end
 
     if isReload then
