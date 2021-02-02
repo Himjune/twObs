@@ -177,8 +177,8 @@ function checkEncounterPlayers()
 
     -- all dead or nobody is fighting
     if (aliveAmount == 0 or engageAmount == 0) and playersAmount>0 then
-        curEncounter["isActive"] = false;
-        message("EncounterEnded");
+        if Settings["encAutoEnd"] then curEncounter["isActive"] = false; end
+        if Settings["encEndMsg"] then message("EncounterEnded"); end
     end
 end
 
@@ -563,6 +563,13 @@ function TWObs_OnEvent(...)
         end
 
         if dumps == nil then dumps = {}; end
+
+        if Settings == nil then
+            Settings = {};
+            Settings["encAutoEnd"] = false;
+            Settings["encEndMsg"] = false;
+            Settings["classFilter"] = "ALL";
+        end
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
     end
