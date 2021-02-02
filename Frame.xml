@@ -22,7 +22,7 @@
 			</EdgeSize>
 		</Backdrop>
 		<Frames>
-			<Button name="TWObs_button_buffs" inherits="GameMenuButtonTemplate" text="Buffs">
+			<Button name="TWObs_button_export" inherits="GameMenuButtonTemplate" text="Экспорт">
 				<Size>
 					<AbsDimension x="80" y="21" />
 				</Size>
@@ -36,7 +36,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(799);
-						TWOBS_showEtalons();
+						TWOBS_export:Show();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -52,16 +52,19 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						TWOBS_showEtalons();
+					</OnShow>
 					<OnClick>
 						PlaySound(799);
-						TWObs_Frame:Hide()
+						TWObs_Frame:Hide();
 					</OnClick>
 				</Scripts>
 			</Button>
 
             <ScrollFrame name="EtalonsFrame" inherits="UIPanelScrollFrameTemplate">
                 <Size>
-                    <AbsDimension x="550" y="420" />
+                    <AbsDimension x="550" y="400" />
                 </Size>
                 <Anchors>
                     <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="TWObs_Frame">
@@ -70,10 +73,73 @@
                         </Offset>
                     </Anchor>
                 </Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="TWOBS_etalons_important_col" inherits="GameFontNormal" text="Важно">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="-3" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="TWOBS_etalons_id_col" inherits="GameFontNormal" text="ID">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="65" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="TWOBS_etalons_name_col" inherits="GameFontNormal" text="Отображаемое название">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="190" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="TWOBS_etalons_type_col" inherits="GameFontNormal" text="Тип">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="460" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="TWOBS_etalons_wb_col" inherits="GameFontNormal" text="WB">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="498" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+						
+						<FontString name="TWOBS_etalons_ep_col" inherits="GameFontNormal" text="EP">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="532" y="20"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
                 <ScrollChild>
                     <Frame name="Etalons_scrollframe_container">
                         <Size>
-                            <AbsDimension x="550" y="380" />
+                            <AbsDimension x="550" y="350" />
                         </Size>
                     </Frame>
                 </ScrollChild>
@@ -283,7 +349,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TWOBS_etalon_edit_popup" frameStrata="DIALOG" enableMouse="true" parent="UIParent" hidden="false" movable="true" clampedToScreen="true">
+	<Frame name="TWOBS_etalon_edit_popup" frameStrata="DIALOG" enableMouse="true" parent="UIParent" hidden="true" movable="true" clampedToScreen="true">
 		<Size>
 			<AbsDimension x="400" y="175"/>
 		</Size>
@@ -359,7 +425,7 @@
 				</Scripts>
 			</CheckButton>
 
-			<EditBox name="TWOBS_etalon_edit_EP" inherits="InputBoxTemplate" letters="6">
+			<EditBox name="TWOBS_etalon_edit_EP" inherits="InputBoxTemplate" letters="4">
 				<Size>
 					<AbsDimension x="50" y="15" />
 				</Size>

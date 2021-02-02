@@ -202,8 +202,6 @@ function handlePlayerStatus(playerStr, statusData)
 end
 
 function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList)
-
-
     -- TODO probably should use full playerStr as identifier 
     if usageList[playerName] == nil then
         usageList[playerName] = {};
@@ -442,7 +440,7 @@ function AddEtalonStr(i, isImportant, isNew, isWB, type, etalonName, displayName
     if i > 1 then
         frame:SetPoint("TOPLEFT", _G[ETALON_BTN_PREFIX .. i-1], "BOTTOMLEFT", 0, -2);
     else
-        frame:SetPoint("TOPLEFT", _G["Etalons_scrollframe_container"], "TOPLEFT", 0, -10);
+        frame:SetPoint("TOPLEFT", _G["Etalons_scrollframe_container"], "TOPLEFT", 0, 0);
     end
 
     local displayNameStr = displayName;
@@ -624,6 +622,8 @@ function TWOBS_formatExport()
 end
 
 function TWOBS_showEtalons()
+    if _G["Etalons_scrollframe_container"] == nil or RaidEtalons == nil then return; end
+
     local kids = { _G["Etalons_scrollframe_container"]:GetChildren() };
 
     for _, child in ipairs(kids) do
