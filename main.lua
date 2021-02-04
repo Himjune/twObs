@@ -13,7 +13,7 @@ end
 function endEncounter()
     inEncounter = false;
     curEncounter["isActive"] = false;
-    print("ending encounter");
+    --print("ending encounter");
 end
 
 
@@ -31,6 +31,8 @@ end
 function formEncountersLine(RaidNo)
     local line = CSV_DELIMITRIER;
 
+    --print("fEL", RaidNo);
+    --print("fEL2f", RaidUsageLog["Raids"][RaidNo]);
     for i, encounter in pairs(RaidUsageLog["Raids"][RaidNo]["Encounters"]) do   
         line = line .. "(" .. encounter["EncNo"] .. ")" .. encounter["EncName"] .. CSV_DELIMITRIER .. 'EP' .. CSV_DELIMITRIER;
     end
@@ -100,7 +102,7 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
     local playerSum = 0;
 
 
-    insertWorldBuffsIntoRaidStart(playerName, encountersList);
+    --insertWorldBuffsIntoRaidStart(playerName, encountersList);
 
     -- Should make: ,USAGE_NAME,EP
     maxPerEncounter, playerSum, importantUsagesPerEncounters = importantsForPlayerOnAllEncounters(playerName, encountersList);
@@ -135,13 +137,18 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
     return lines;
 end
 
-function renderCSV(RaidNo)
+function renderCSV()
+    local RaidNo = twobsSettings["selectedRaid"];
+    local classFilter = twobsSettings["classFilter"];
     local result = "";
 
-    result = result .. formEncountersLine(RaidNo).."\n";
+    result = result .. formEncountersLine(RaidNo) .."\n";
     
     for playerName, playerInfo in pairs(RaidUsageLog["Raids"][RaidNo]["Players"]) do
-        result = result .. formPlayerLinesForAllEncounters(playerName, RaidUsageLog["Raids"][RaidNo]["Encounters"]);
+        if classFilter == "ALL" or playerInfo["Class"] == classFilter then
+            
+            result = result .. formPlayerLinesForAllEncounters(playerName, RaidUsageLog["Raids"][RaidNo]["Encounters"]);
+        end
     end
 
     return result;
@@ -175,7 +182,7 @@ function checkEncounterPlayers()
         end
     end
 
-    print("a e p", aliveAmount, engageAmount, playersAmount);
+    --print("a e p", aliveAmount, engageAmount, playersAmount);
 
     -- all dead or nobody is fighting
     if (aliveAmount == 0 or engageAmount == 0) and playersAmount>0 then
@@ -279,6 +286,9 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
     local playerClass, playerName = strsplit("/", playerStr);
 
+    if twobsSettings["printShouts"] then
+        print("REC", playerStr, usageData);
+    end
 
     local isBuff = (usageType == "A");
 
@@ -318,7 +328,7 @@ function raidEncounterInit(tarName)
         curRaid["Encounters"][encIdx]["MaxCount"] = 0;
 
     curEncounter = curRaid["Encounters"][encIdx];
-    print("encINIT", curEncounter["EncName"], curEncounter["isActive"])
+    --print("encINIT", curEncounter["EncName"], curEncounter["isActive"])
 end
 
 function raidInitRaid(raidName)
@@ -571,6 +581,7 @@ function TWObs_OnEvent(...)
             twobsSettings["encEndMsg"] = false;
             twobsSettings["classFilter"] = "ALL";
             twobsSettings["shoutEverywhere"] = false;
+            twobsSettings["selectedRaid"] = 1;
         end
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
@@ -616,7 +627,7 @@ function TWObs_OnEvent(...)
     end
 
     if event == "RAID_INSTANCE_WELCOME" then
-        print("INST", arg1, arg2, arg3, arg4);
+        --print("INST", arg1, arg2, arg3, arg4);
     end
 
     if event == "READY_CHECK_CONFIRM" then        
@@ -625,7 +636,7 @@ function TWObs_OnEvent(...)
 end
 
 function TWOBS_formatExport()
-    local formatedCSV = renderCSV(1);
+    local formatedCSV = renderCSV();
 
     TWOBS_export_dump:SetText(formatedCSV);
 end
@@ -706,7 +717,7 @@ function TWOBS_EtalonButton_Save()
 end
 
 function selectClassFilter(self, dropDownFrame)
-    print("sCF", self.value);
+    --print("sCF", self.value);
     twobsSettings["classFilter"] = self.value;
     UIDropDownMenu_SetSelectedValue(dropDownFrame, self.value);
 
@@ -749,6 +760,41 @@ function TWOBS_class_dropdown_OnLoad(self)
     local selected = "ALL";
     if twobsSettings and twobsSettings["classFilter"] then
         selected = twobsSettings["classFilter"];
+    end
+    UIDropDownMenu_SetSelectedValue(self, selected);
+end
+
+
+function selectRaid(self)
+    --print("sR", self.value);
+    twobsSettings["selectedRaid"] = self.value;
+    UIDropDownMenu_SetSelectedValue(_G["TWOBS_export_raid_dropdown"], self.value);
+
+    TWOBS_formatExport();
+end
+
+function TWOBS_raid_dropdown_OnLoad(self)
+    UIDropDownMenu_SetWidth(self, 300);
+
+    if (RaidUsageLog == nil) then return; end
+
+    local func = nil;
+    if self == _G["TWOBS_etalons_class_dropdown"] then func = scfEtalons; end
+    if self == _G["TWOBS_export_class_dropdown"] then func = scfExport; end
+
+    for i, raid in pairs(RaidUsageLog["Raids"]) do
+        local raidStr = raid["Date"].. ": " ..raid["RaidName"] .. " ("..i..")";
+        addDropDownButton(raidStr, i, selectRaid);
+    end
+
+    
+    local selected = 1;
+    if twobsSettings["selectedRaid"] then
+        selected = twobsSettings["selectedRaid"]
+    else
+        if RaidUsageLog and RaidUsageLog["Count"] then
+            selected = RaidUsageLog["Count"];
+        end
     end
     UIDropDownMenu_SetSelectedValue(self, selected);
 end

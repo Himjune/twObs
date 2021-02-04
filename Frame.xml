@@ -273,7 +273,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="15" y="-15"/>
+							<AbsDimension x="15" y="-45"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -282,7 +282,7 @@
 						<Anchors>
 							<Anchor point="CENTER" />
 						</Anchors>
-						<FontString inherits="GameFontNormal"/>
+						<FontString inherits="GameFontHighlight"/>
 						<Scripts>
 							<OnLoad>
 								self:SetSize(TWOBS_export_scrollframe:GetSize());
@@ -305,14 +305,14 @@
 					</OnLoad>
 				</Scripts>
 			</ScrollFrame>
-			<Button name="TWOBS_export_csv" inherits="GameMenuButtonTemplate" text="Сформировать CSV">
+			<Button name="TWOBS_export_csv" inherits="GameMenuButtonTemplate" text="Обновить CSV">
 				<Size>
-					<AbsDimension x="150" y="21" />
+					<AbsDimension x="125" y="21" />
 				</Size>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="TWOBS_export">
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="TWOBS_export_close">
 						<Offset>
-							<AbsDimension x="15" y="15" />
+							<AbsDimension x="-5" y="-10" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -332,12 +332,12 @@
 			</Button>
 			<Button name="$parent_highlight" inherits="GameMenuButtonTemplate" text="Выделить текст">
 				<Size>
-					<AbsDimension x="150" y="21" />
+					<AbsDimension x="125" y="21" />
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TWOBS_export_csv">
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="TWOBS_export_csv">
 						<Offset>
-							<AbsDimension x="5" y="0" />
+							<AbsDimension x="-5" y="0" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -347,10 +347,25 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+
+			<Frame name="TWOBS_export_raid_dropdown" inherits="UIDropDownMenuTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="TWOBS_export">
+						<Offset>
+							<AbsDimension x="0" y="-10" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, TWOBS_raid_dropdown_OnLoad);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnShow>
-				TWOBS_export_dump:SetText("Сканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...\nСканирую логи. Пожалуйста, ожидайте...");
+				TWOBS_export_dump:SetText("Выбирите рейд и нажмите Обновить CSV");
 			</OnShow>
 			<OnHide>
 
