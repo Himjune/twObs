@@ -487,8 +487,8 @@ function handleEnteringWorld(isLogin, isReload)
     local name, type, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     local cnt = RaidUsageLog["Count"];
     
-    if type ~= "raid" then
-    --    return
+    if not (type == "raid" or twobsSettings["registerAnyLoc"]) then
+        return;
     end
 
     if isReload then
