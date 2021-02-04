@@ -200,25 +200,25 @@ function checkEncounterStage()
         end
     end
 
-    print("CHK e p", engagedAmount, '/', playersAmount, "S:", curEncounter["Stage"]);
+    --print("CHK e p", engagedAmount, '/', playersAmount, "S:", curEncounter["Stage"]);
 
     
     if engagedAmount > 0 then
         if curEncounter["Stage"] == 0 then
             curEncounter["Stage"] = 1; -- if stage was INCOMING and we have fighting players goto ACTIVE stage
-            print("ACTIVE NOW", curEncounter["Stage"]);
+            --print("ACTIVE NOW", curEncounter["Stage"]);
         end
     else
         -- there is no fighting players, so if stage was ACTIVE goto ENDED stage
         if curEncounter["Stage"] == 1 then
             curEncounter["Stage"] = 2;
-            print("ENDED NOW", curEncounter["Stage"]);
+            --print("ENDED NOW", curEncounter["Stage"]);
         end
     end
 
     -- recheck while encounter not ENDED
     if curEncounter["Stage"] < 2 then
-        print("SCHED AGAIN", curEncounter["Stage"]);
+        --print("SCHED AGAIN", curEncounter["Stage"]);
         C_Timer.After(CHECK_TIMER_SECS, checkEncounterStage);
     end
 end
