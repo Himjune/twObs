@@ -230,7 +230,7 @@ function handlePlayerStatus(playerStr, statusData)
         curEncounter["EncPlayers"][playerName]["isAlive"] = isAlive;
     end
 
-    if curEncounter["isActive"] then checkEncounterPlayers(); end
+    if curEncounter and curEncounter["isActive"] then checkEncounterPlayers(); end
 end
 
 function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList)
