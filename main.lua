@@ -193,44 +193,16 @@ function checkEncounterPlayers()
     local engageAmount = 0;
     local playersAmount = 0;
 
-    for player, playerStatus in pairs(curEncounter["EncPlayers"]) do
-        playersAmount = playersAmount+1;
-
-        if playerStatus["isAlive"] then 
-            aliveAmount = aliveAmount+1;
-        end
-
-        if playerStatus["isEngage"] then 
-            engageAmount = engageAmount+1;
-        end
-    end
-
     --print("a e p", aliveAmount, engageAmount, playersAmount);
 
     -- all dead or nobody is fighting
     if (aliveAmount == 0 or engageAmount == 0) and playersAmount>0 then
         if twobsSettings["encAutoEnd"] then curEncounter["isActive"] = false; end
         if twobsSettings["encEndMsg"] then message("EncounterEnded"); end
+    
+    else
+    
     end
-end
-
-function handlePlayerStatus(playerStr, statusData)
-    local engageStr, aliveStr = strsplit("/", statusData);
-    local playerClass, playerName = strsplit("/", playerStr);
-
-    local isEngage = (engageStr == "ENGAGE");
-    local isAlive = (aliveStr == "ALIVE");
-
-    if curEncounter then
-        if curEncounter["EncPlayers"][playerName] == nil then
-            curEncounter["EncPlayers"][playerName] = {};
-        end
-
-        curEncounter["EncPlayers"][playerName]["isEngage"] = isEngage;
-        curEncounter["EncPlayers"][playerName]["isAlive"] = isAlive;
-    end
-
-    if curEncounter and curEncounter["isActive"] then checkEncounterPlayers(); end
 end
 
 function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList)
@@ -341,6 +313,7 @@ function raidEncounterInit(tarName)
         curRaid["Encounters"][encIdx]["EncName"] = tarName;
         curRaid["Encounters"][encIdx]["EncNo"] = encIdx;
         curRaid["Encounters"][encIdx]["isActive"] = (encIdx>1);
+        curRaid["Encounters"][encIdx]["Stage"] = 0;    -- 0 - INCOMING; 1 - ACTIVE; 2 - ENDED
         curRaid["Encounters"][encIdx]["EncPlayers"] = {};
 
         local TS = GetServerTime();
@@ -576,6 +549,18 @@ function TWObs_OnEvent(...)
     end
     
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
+        local i=1;
+        for i=1,40 do
+            if UnitAffectingCombat("raid"..i) then
+                print("R"..i, UnitAffectingCombat("raid"..i));
+            end
+        end
+
+        print("B1", UnitAffectingCombat("boss1"));
+        print("B2", UnitAffectingCombat("boss2"));
+        print("B3", UnitAffectingCombat("boss3"));
+        print("B4", UnitAffectingCombat("boss4"));
+
         local unit, castGUID, spellId = select(2,...);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
 
@@ -631,10 +616,11 @@ function TWObs_OnEvent(...)
             msg = msg.."ALIVE";
         end
 
-        C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
+        --C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
     end
     
     if event == "PLAYER_REGEN_DISABLED" then
+
         local deadOrGhost = UnitIsDeadOrGhost("player");
         local localizedClass, englishClass, classIndex = UnitClass("player");
         local playerName, realm = UnitName("player");
@@ -646,7 +632,7 @@ function TWObs_OnEvent(...)
             msg = msg.."ALIVE";
         end
 
-        C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
+        --C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
     end
 
     if event == "RAID_INSTANCE_WELCOME" then
