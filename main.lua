@@ -188,20 +188,38 @@ end
 --  RAID FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
 
-function checkEncounterPlayers()
-    local aliveAmount = 0;
-    local engageAmount = 0;
-    local playersAmount = 0;
-
-    --print("a e p", aliveAmount, engageAmount, playersAmount);
-
-    -- all dead or nobody is fighting
-    if (aliveAmount == 0 or engageAmount == 0) and playersAmount>0 then
-        if twobsSettings["encAutoEnd"] then curEncounter["isActive"] = false; end
-        if twobsSettings["encEndMsg"] then message("EncounterEnded"); end
+local CHECK_TIMER_SECS = 1;
+function checkEncounterStage()
+    local playersAmount = GetNumGroupMembers();
+    if playersAmount == 0 or (not curEncounter) then return; end
     
+    local engagedAmount = 0;
+    for i = 1,playersAmount do
+        if UnitAffectingCombat("raid"..i) then 
+            engagedAmount = engagedAmount + 1;
+        end
+    end
+
+    print("CHK e p", engagedAmount, '/', playersAmount, "S:", curEncounter["Stage"]);
+
+    
+    if engagedAmount > 0 then
+        if curEncounter["Stage"] == 0 then
+            curEncounter["Stage"] = 1; -- if stage was INCOMING and we have fighting players goto ACTIVE stage
+            print("ACTIVE NOW", curEncounter["Stage"]);
+        end
     else
-    
+        -- there is no fighting players, so if stage was ACTIVE goto ENDED stage
+        if curEncounter["Stage"] == 1 then
+            curEncounter["Stage"] = 2;
+            print("ENDED NOW", curEncounter["Stage"]);
+        end
+    end
+
+    -- recheck while encounter not ENDED
+    if curEncounter["Stage"] < 2 then
+        print("SCHED AGAIN", curEncounter["Stage"]);
+        C_Timer.After(CHECK_TIMER_SECS, checkEncounterStage);
     end
 end
 
@@ -324,6 +342,7 @@ function raidEncounterInit(tarName)
         curRaid["Encounters"][encIdx]["MaxCount"] = 0;
 
     curEncounter = curRaid["Encounters"][encIdx];
+    checkEncounterStage();
     --print("encINIT", curEncounter["EncName"], curEncounter["isActive"])
 end
 
