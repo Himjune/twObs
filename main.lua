@@ -310,7 +310,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     if etalon["isWorldBuff"] then
         if curRaid then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Encounters"][1]); end
     else
-        if curEncounter and curEncounter["isActive"] then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
+        if curEncounter and curEncounter["Stage"]<2 then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
     if etalon["Type"] == "A" then
