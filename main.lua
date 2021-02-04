@@ -55,6 +55,25 @@ function insertWorldBuffsIntoRaidStart(playerName, encountersList)
     end
 end
 
+function insertImportant(importantsList, encIdx, usageId, usageName, price)
+    local cnt = importantUsages[encIdx]["LinesCnt"];
+    if not importantsList[encIdx]["Usages"][usageId] then
+        print()
+        importantsList[encIdx]["Usages"][usageId] = true;
+
+        cnt = cnt+1;
+        importantUsages[encIdx]["LinesCnt"] = cnt;
+        importantUsages[encIdx]["Lines"][cnt] = {};
+        importantUsages[encIdx]["Lines"][cnt]["name"] = usageName;
+        importantUsages[encIdx]["Lines"][cnt]["EP"] = price;
+
+        importantUsages[encIdx]["epSum"] = importantUsages[encIdx]["epSum"] + price;
+    end
+
+    return cnt;
+end
+
+
 function importantsForPlayerOnAllEncounters(playerName, encountersList)
     local maxPerEncounter = 0;
     local encAmount = 0;
@@ -63,35 +82,36 @@ function importantsForPlayerOnAllEncounters(playerName, encountersList)
 
     for encIdx, encounter in pairs(encountersList) do
         local encounterImportantCnt = 0;
-        local epSum = 0;
 
         encAmount = encAmount +1;
 
         importantUsages[encIdx] = {};
         importantUsages[encIdx]["EncName"] = encounter["EncName"];
-        importantUsages[encIdx]["Count"] = 0;
+        importantUsages[encIdx]["Usages"] = {};
+        importantUsages[encIdx]["Lines"] = {};
+        importantUsages[encIdx]["LinesCnt"] = 0;
+        importantUsages[encIdx]["epSum"] = 0;
 
-        epSum = 0;
+        local newCnt = 0;
         if encounter["Usages"][playerName] then
             for usageName, usageInfo in pairs(encounter["Usages"][playerName]["Usages"]) do
-                if RaidEtalons[usageName]["isImportant"] and (RaidEtalons[usageName]["isWorldBuff"] == false or encIdx==1) then
-                    encounterImportantCnt = encounterImportantCnt +1;
 
-                    importantUsages[encIdx][encounterImportantCnt] = {};
-                    importantUsages[encIdx][encounterImportantCnt]["name"] = RaidEtalons[usageName]["displayName"];
-                    importantUsages[encIdx][encounterImportantCnt]["EP"] = RaidEtalons[usageName]["price"];
-                    epSum = epSum + RaidEtalons[usageName]["price"];
+                if RaidEtalons[usageName]["isImportant"] then
+                    if RaidEtalons[usageName]["isWorldBuff"] then
+                        newCnt = insertImportant(importantUsages, 1, usageName, RaidEtalons[usageName]["displayName"], RaidEtalons[usageName]["price"]);
+                    else
+                        newCnt = insertImportant(importantUsages, encIdx, usageName, RaidEtalons[usageName]["displayName"], RaidEtalons[usageName]["price"]);
+                    end
+
                 end
+
             end
         end
 
-        wholeSum = wholeSum + epSum;
-        importantUsages[encIdx]["epSum"] = epSum;
-        importantUsages[encIdx]["Count"] = encounterImportantCnt;
-        if maxPerEncounter < encounterImportantCnt then maxPerEncounter = encounterImportantCnt; end
+        if newCnt > maxPerEncounter then maxPerEncounter = newCnt; end
     end
 
-    return maxPerEncounter, wholeSum, importantUsages;
+    return maxPerEncounter, importantUsages;
 end
 
 function formPlayerLinesForAllEncounters(playerName, encountersList)
@@ -101,18 +121,19 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
 
     local playerSum = 0;
 
-
-    --insertWorldBuffsIntoRaidStart(playerName, encountersList);
-
     -- Should make: ,USAGE_NAME,EP
-    maxPerEncounter, playerSum, importantUsagesPerEncounters = importantsForPlayerOnAllEncounters(playerName, encountersList);
+    maxPerEncounter, importantUsagesPerEncounters = importantsForPlayerOnAllEncounters(playerName, encountersList);
     
     for lineNo=1,maxPerEncounter do 
 
         for encNo=1,encAmount do
-            if importantUsagesPerEncounters[encNo][lineNo] then
-                local strEP = floatToCSV(importantUsagesPerEncounters[encNo][lineNo]["EP"]);
-                lines = lines .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo][lineNo]["name"] .. CSV_DELIMITRIER .. strEP;
+            if lineNo == 1 then
+                playerSum = playerSum + importantUsagesPerEncounters[encNo]["epSum"];
+            end
+
+            if importantUsagesPerEncounters[encNo]["Lines"][lineNo] then
+                local strEP = floatToCSV(importantUsagesPerEncounters[encNo]["Lines"][lineNo]["EP"]);
+                lines = lines .. CSV_DELIMITRIER .. importantUsagesPerEncounters[encNo]["Lines"][lineNo]["name"] .. CSV_DELIMITRIER .. strEP;
             else
                 lines = lines .. CSV_DELIMITRIER .. CSV_DELIMITRIER;
             end
@@ -120,6 +141,8 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
 
         lines = lines .. "\n";
     end
+
+    playerSum = math.floor(playerSum+0.9999); -- ROUND UP
 
     -- SUM LINE
     lines = lines .. "\n";
