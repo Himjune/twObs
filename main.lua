@@ -292,6 +292,10 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
         RaidEtalons[usageId]["class"][userClass] = true;
     end
 
+    if usageType == "A" then
+        RaidEtalons[usageId]["Type"] = usageType,
+    end
+
     return etalon;
 end
 
@@ -406,6 +410,7 @@ function shout(spellType, spellName, spellId, spellInfo)
     
     local instName, instType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     if twobsSettings["shoutEverywhere"] or instType == "raid" then
+        print("SHOUTING", msg);
         C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
     end
 end
@@ -654,6 +659,7 @@ function TWObs_OnEvent(...)
     end
 
     if event == "READY_CHECK_CONFIRM" then        
+        print("SHOUT ON CHK");
         if arg1 == "player" and arg2 then shoutBuffs(); end
     end
 end
