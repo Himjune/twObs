@@ -225,7 +225,7 @@ end
 
 function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList, regShots)
     regShots = regShots
-    if regShots == nil then regShots = true
+    if regShots == nil then regShots = true; end
 
     -- TODO probably should use full playerStr as identifier 
     if usageList[playerName] == nil then
@@ -298,9 +298,13 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
         RaidEtalons[usageId]["class"][userClass] = true;
     end
 
+    -- overwrite buffs in etalons
     if usageType == "A" then
-        RaidEtalons[usageId]["Type"] = usageType;
-        etalon["Type"] = usageType;
+        RaidEtalons[usageId]["Type"] = "A";
+        RaidEtalons[usageId]["isImportant"] = true;
+        
+        etalon["Type"] = "A";
+        etalon["isImportant"] = true;
     end
 
     return etalon;
@@ -314,11 +318,6 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
         print("REC", playerStr, usageData);
     end
 
-    local isBuff = (usageType == "A");
-    if isBuff then 
-        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Buffs"], false);
-    end
-
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
     if etalon["isWorldBuff"] then
@@ -327,9 +326,9 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
         if curEncounter and curEncounter["Stage"]<2 then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
-    if etalon["Type"] == "A" then
+    if etalon["Type"] == "A" and curRaid then
         local duration = strsplit("/", usageInfo);
-        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Buffs"]);
+        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Buffs"], false);
     end
 end
 
@@ -628,7 +627,12 @@ function TWObs_OnEvent(...)
         handleEnteringWorld(arg1, arg2);
     end
 
+    -- raidCheck inited
     if event == "READY_CHECK" then
+        if curRaid then
+            curRaid["Buffs"] = {};
+        end
+
         local playerName, realm = UnitName("player")
         if arg1 == playerName then shoutBuffs(); end
     end
@@ -668,6 +672,7 @@ function TWObs_OnEvent(...)
         --print("INST", arg1, arg2, arg3, arg4);
     end
 
+    -- me confirmed readycheck
     if event == "READY_CHECK_CONFIRM" then        
         print("SHOUT ON CHK");
         if arg1 == "player" and arg2 then shoutBuffs(); end
