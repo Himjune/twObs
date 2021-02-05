@@ -698,11 +698,26 @@ function TWOBS_showEtalons()
     local filter = "ALL";
     if twobsSettings and twobsSettings["classFilter"] then filter = twobsSettings["classFilter"]; end
 
+    print("SORT");
+    local keys = {};
     for etalonName, etalonInfo in pairs(RaidEtalons) do
         if filter == "ALL" or etalonInfo["class"][filter] then
             idx = idx+1;
-            AddEtalonStr(idx, etalonInfo["isImportant"], etalonInfo["isNew"], etalonInfo["isWorldBuff"], etalonInfo["Type"], etalonName, etalonInfo["displayName"], etalonInfo["price"]);
+            keys[idx] = etalonName;
         end
+    end
+
+    table.sort(keys, function(a, b) 
+        print ("A B", a, b);
+        return RaidEtalons[a]["displayName"]:upper() < RaidEtalons[b]["displayName"]:upper();
+    end);
+
+    idx = 0;
+    for _,k in pairs(keys) do
+        idx = idx+1;
+        print("PR", k);
+        AddEtalonStr(idx, RaidEtalons[k]["isImportant"], RaidEtalons[k]["isNew"], RaidEtalons[k]["isWorldBuff"],
+                        RaidEtalons[k]["Type"], k, RaidEtalons[k]["displayName"], RaidEtalons[k]["price"]);
     end
 
     --TWOBS_etalons_nodata_label:Hide();
