@@ -2,6 +2,8 @@ local curRaid = nil;
 local curEncounter = nil;
 local curEtalonEdit = nil;
 
+local RaidBuffs = nil;
+
 local CSV_DELIMITRIER = "\t"
 
 -- TODO enter combat if no dbm pull emited
@@ -31,7 +33,7 @@ function formEncountersLine(RaidNo)
     local line = CSV_DELIMITRIER;
 
     for i, encounter in pairs(RaidUsageLog["Raids"][RaidNo]["Encounters"]) do   
-        line = line .. "(" .. encounter["EncNo"] .. ")" .. encounter["EncName"] .. CSV_DELIMITRIER .. 'EP' .. CSV_DELIMITRIER;
+        line = line .. "(" .. encounter["EncNo"] .. ") " .. encounter["EncName"] .. CSV_DELIMITRIER .. 'EP' .. CSV_DELIMITRIER;
     end
 
     return line;
@@ -177,11 +179,11 @@ function renderBuffs()
     local classFilter = twobsSettings["classFilter"];
     local result = "";
 
-    if not curRaid then return "Рейд пуст"; end
+    if not RaidBuffs then return "Рейд пуст"; end
     
     local pIdx = 0;
     local idx = 0;
-    for playerName, playerInfo in pairs(curRaid["Buffs"]) do
+    for playerName, playerInfo in pairs(RaidBuffs) do
         pIdx = pIdx + 1;
         if classFilter == "ALL" or playerInfo["Class"] == classFilter then
             result = result .. pIdx .. ")" .. playerName .. " - " .. playerInfo["Class"] .. "\n";
@@ -343,7 +345,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
 
     if etalon["Type"] == "A" and curRaid then
         local duration = strsplit("/", usageInfo);
-        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Buffs"], false);
+        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, RaidBuffs, false);
     end
 end
 
@@ -392,7 +394,7 @@ function raidInitRaid(raidName)
         RaidUsageLog["Raids"][raidIdx]["Encounters"] = {};
 
         --RaidUsageLog["Raids"][raidIdx]["LongTermUsages"] = {};
-        RaidUsageLog["Raids"][raidIdx]["Buffs"] = {};
+        --RaidUsageLog["Raids"][raidIdx]["Buffs"] = {};
         RaidUsageLog["Raids"][raidIdx]["Players"] = {};
 
     curRaid = RaidUsageLog["Raids"][raidIdx];
@@ -636,7 +638,7 @@ function TWObs_OnEvent(...)
     -- raidCheck inited
     if event == "READY_CHECK" then
         if curRaid then
-            curRaid["Buffs"] = {};
+            RaidBuffs = {};
         end
 
         local playerName, realm = UnitName("player")
