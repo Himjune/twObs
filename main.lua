@@ -814,15 +814,19 @@ end
 function selectClassFilter(self, dropDownFrame)
     twobsSettings["classFilter"] = self.value;
     UIDropDownMenu_SetSelectedValue(dropDownFrame, self.value);
-
-    TWOBS_showEtalons();
 end
 
 function scfEtalons(self)
     selectClassFilter(self, _G["TWOBS_etalons_class_dropdown"]);
+    selectClassFilter(self, _G["TWOBS_export_class_dropdown"]);
+
+    TWOBS_showEtalons();
 end
 function scfExport(self)
+    selectClassFilter(self, _G["TWOBS_etalons_class_dropdown"]);
     selectClassFilter(self, _G["TWOBS_export_class_dropdown"]);
+
+    TWOBS_formatExport();
 end
 
 function addDropDownButton(text, value, func)
@@ -855,6 +859,7 @@ function TWOBS_class_dropdown_OnLoad(self)
     if twobsSettings and twobsSettings["classFilter"] then
         selected = twobsSettings["classFilter"];
     end
+
     UIDropDownMenu_SetSelectedValue(self, selected);
 end
 

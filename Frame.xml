@@ -379,6 +379,21 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+
+			<Frame name="TWOBS_export_class_dropdown" inherits="UIDropDownMenuTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TWOBS_export_raid_dropdown">
+						<Offset>
+							<AbsDimension x="5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, TWOBS_class_dropdown_OnLoad);
+					</OnLoad>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnShow>
