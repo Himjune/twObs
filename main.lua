@@ -575,11 +575,6 @@ function TWObs_OnEvent(...)
             end
         end
 
-        print("B1", UnitAffectingCombat("boss1"));
-        print("B2", UnitAffectingCombat("boss2"));
-        print("B3", UnitAffectingCombat("boss3"));
-        print("B4", UnitAffectingCombat("boss4"));
-
         local unit, castGUID, spellId = select(2,...);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
 
