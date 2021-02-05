@@ -916,13 +916,13 @@ SlashCmdList["TWOBS"] = function(msg)
     end
 
     if msg == "exp" then
-        if twobsSettings then twobsSettings["isTracking"] = true;
+        if twobsSettings then twobsSettings["isTracking"] = true; end
         _G["TWOBS_export"]:Show();
         done = true;
     end
 
     if msg == "eta" then
-        if twobsSettings then twobsSettings["isTracking"] = true;
+        if twobsSettings then twobsSettings["isTracking"] = true; end
         _G["TWObs_Frame"]:Show();
         done = true;
     end
