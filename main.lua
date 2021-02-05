@@ -2,7 +2,7 @@ local curRaid = nil;
 local curEncounter = nil;
 local curEtalonEdit = nil;
 
-local VERSION = "0.23(05-02-20)";
+local VERSION = "1.01(05-02-20)";
 
 local RaidBuffs = nil;
 
@@ -902,7 +902,7 @@ SlashCmdList["TWOBS"] = function(msg)
     
     if msg == "notadmin" then
         if twobsSettings then twobsSettings["isTracking"] = false; end
-        
+
         RaidUsageLog = {
             ["Count"] = 0,
             ["Raids"] = {},
