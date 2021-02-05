@@ -2,6 +2,8 @@ local curRaid = nil;
 local curEncounter = nil;
 local curEtalonEdit = nil;
 
+local VERSION = "0.23(05-02-20)";
+
 local RaidBuffs = nil;
 
 local CSV_DELIMITRIER = "\t"
@@ -188,7 +190,7 @@ function renderBuffs()
 
         pIdx = pIdx + 1;
         if classFilter == "ALL" or playerInfo["Class"] == classFilter then
-            result = result .. pIdx .. ")  " .. playerName .. " - " .. playerInfo["Class"] .. "\n";
+            result = result .. pIdx .. ")  " .. playerName .. " - " .. playerInfo["Class"] .. " (v.:" .. playerInfo["Version"] .. ")\n";
 
             idx = 0;
             for usageName, usageInfo in pairs(playerInfo["Usages"]) do
@@ -246,7 +248,7 @@ function checkEncounterStage()
     end
 end
 
-function raidRegisterPlayerInBuffs(playerClass, playerName, usageId, usageInfo)
+function raidRegisterPlayerInBuffs(playerClass, playerName, playerVersion, usageId, usageInfo)
     regShots = regShots
     if regShots == nil then regShots = true; end
 
@@ -254,6 +256,7 @@ function raidRegisterPlayerInBuffs(playerClass, playerName, usageId, usageInfo)
     if RaidBuffs[playerName] == nil then
         RaidBuffs[playerName] = {};
         RaidBuffs[playerName]["Class"] = playerClass;
+        RaidBuffs[playerName]["Version"] = playerVersion;
         RaidBuffs[playerName]["Usages"] = {};
         RaidBuffs[playerName]["Count"] = 0;
     end
@@ -362,7 +365,7 @@ end
 
 function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageInfo param
     local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
-    local playerClass, playerName = strsplit("/", playerStr);
+    local playerClass, playerName, playerVersion = strsplit("/", playerStr);
 
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
@@ -374,7 +377,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
 
     if etalon["Type"] == "A" and RaidBuffs then
         local duration = strsplit("/", usageInfo);
-        raidRegisterPlayerInBuffs(playerClass, playerName, usageId, usageInfo);
+        raidRegisterPlayerInBuffs(playerClass, playerName, playerVersion, usageId, usageInfo);
     end
 end
 
@@ -457,13 +460,13 @@ end
 
 
 -- Shout format:
--- SH|<CLASS>/<PLAYER>|A/<NAME>/<SpellId>/<DURATION>?...
--- SH|<CLASS>/<PLAYER>|I/<NAME>/<SpellId>/INSTANT?...
+-- SH|<CLASS>/<PLAYER>/VER|A/<NAME>/<SpellId>/<DURATION>?...
+-- SH|<CLASS>/<PLAYER>/VER|I/<NAME>/<SpellId>/INSTANT?...
 function shout(spellType, spellName, spellId, spellInfo)
     local localizedClass, englishClass, classIndex = UnitClass("player");
     local playerName, realm = UnitName("player");
 
-    local msg = "SH|"..   englishClass.."/"..playerName   .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
+    local msg = "SH|"..   englishClass.."/"..playerName .."/"..VERSION  .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
     
     local instName, instType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     if twobsSettings["shoutEverywhere"] or instType == "raid" or instType == "party" then
