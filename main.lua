@@ -173,6 +173,33 @@ function renderCSV()
     return result;
 end
 
+function renderBuffs()
+    local classFilter = twobsSettings["classFilter"];
+    local result = "";
+
+    if not curRaid then return "Рейд пуст"; end
+    
+    local pIdx = 0;
+    local idx = 0;
+    for playerName, playerInfo in pairs(curRaid["Buffs"]) do
+        pIdx = pIdx + 1;
+        if classFilter == "ALL" or playerInfo["Class"] == classFilter then
+            result = result .. pIdx .. ")" .. playerName .. " - " .. playerInfo["Class"] .. "\n";
+
+            idx = 0;
+            for usageName, usageInfo in pairs(playerInfo["Usages"]) do
+                idx = idx + 1;
+                result = result .. "    " .. "(" .. idx .. ")" .. RaidEtalons[usageName]["displayName"] .. "\n";
+            end
+
+            result = result .. "\n" .. "\n";
+        end
+    end
+
+    if pIdx == 0 then result = "Нет данных по игрокам с этим фильтром"; end
+    return result;
+end
+
 ---------------------------------------------------------------------------------------------------------------------------
 --  RENDER FUNCS END
 ---------------------------------------------------------------------------------------------------------------------------
@@ -563,7 +590,7 @@ function TWObs_OnEvent(...)
             -- "ST|<CLASS>/<NAME>|AVOID/DEAD"
             if type == "ST" then
                 local type, playerStr, statusData = strsplit("|", message);
-                handlePlayerStatus(playerStr, statusData);
+                --handlePlayerStatus(playerStr, statusData);
             end
         end
     end
@@ -659,8 +686,12 @@ end
 
 function TWOBS_formatExport()
     local formatedCSV = renderCSV();
-
     TWOBS_export_dump:SetText(formatedCSV);
+end
+
+function TWOBS_formatBuffs()
+    local formatedBuffs = renderBuffs();
+    TWOBS_export_dump:SetText(formatedBuffs);
 end
 
 function TWOBS_showEtalons()

@@ -347,6 +347,23 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Button name="$parent_buffs" inherits="GameMenuButtonTemplate" text="Показать баффы">
+				<Size>
+					<AbsDimension x="125" y="21" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_highlight">
+						<Offset>
+							<AbsDimension x="-5" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TWOBS_formatBuffs();
+					</OnClick>
+				</Scripts>
+			</Button>
 
 			<Frame name="TWOBS_export_raid_dropdown" inherits="UIDropDownMenuTemplate" id="2">
 				<Anchors>
