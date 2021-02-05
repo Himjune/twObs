@@ -223,7 +223,10 @@ function checkEncounterStage()
     end
 end
 
-function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList)
+function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList, regShots)
+    regShots = regShots
+    if regShots == nil then regShots = true
+
     -- TODO probably should use full playerStr as identifier 
     if usageList[playerName] == nil then
         usageList[playerName] = {};
@@ -262,11 +265,14 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
     end
 
     local shotsCnt = usageInstance["shotsCnt"] +1;
-    usageInstance["shotsCnt"] = shotsCnt;
-    usageInstance["shots"][shotsCnt] = {
-        ["encounterTime"] = encounterTimeStr;
-        ["usageInfo"] = usageInfo;
-    }
+
+    if regShots then
+        usageInstance["shotsCnt"] = shotsCnt;
+        usageInstance["shots"][shotsCnt] = {
+            ["encounterTime"] = encounterTimeStr;
+            ["usageInfo"] = usageInfo;
+        }
+    end
 end
 
 function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass) 
@@ -309,6 +315,9 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     end
 
     local isBuff = (usageType == "A");
+    if isBuff then 
+        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curRaid["Buffs"], false);
+    end
 
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
@@ -508,7 +517,7 @@ function handleEnteringWorld(isLogin, isReload)
     local name, type, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
     local cnt = RaidUsageLog["Count"];
     
-    if not (type == "raid" or twobsSettings["registerAnyLoc"]) then
+    if not (type == "raid" or type == "party" or twobsSettings["registerAnyLoc"]) then
         return;
     end
 
