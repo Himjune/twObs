@@ -183,7 +183,9 @@ function renderBuffs()
     
     local pIdx = 0;
     local idx = 0;
+
     for playerName, playerInfo in pairs(RaidBuffs) do
+        
         pIdx = pIdx + 1;
         if classFilter == "ALL" or playerInfo["Class"] == classFilter then
             result = result .. pIdx .. ")" .. playerName .. " - " .. playerInfo["Class"] .. "\n";
@@ -244,6 +246,33 @@ function checkEncounterStage()
     end
 end
 
+function raidRegisterPlayerInBuffs(playerClass, playerName, usageId, usageInfo)
+    regShots = regShots
+    if regShots == nil then regShots = true; end
+
+    -- TODO probably should use full playerStr as identifier 
+    if RaidBuffs[playerName] == nil then
+        RaidBuffs[playerName] = {};
+        RaidBuffs[playerName]["Class"] = playerClass;
+        RaidBuffs[playerName]["Usages"] = {};
+        RaidBuffs[playerName]["Count"] = 0;
+    end
+
+    usageInstance = RaidBuffs[playerName]["Usages"][usageId];
+    if RaidBuffs[playerName]["Usages"][usageId] == nil then
+        local cnt = RaidBuffs[playerName]["Count"] + 1;
+        RaidBuffs[playerName]["Count"] = cnt;
+
+        RaidBuffs[playerName]["Usages"][usageId] = {
+            ["spellId"] = usageId,
+            ["usageInfo"] = usageInfo,
+            ["inEncIdx"] = cnt;
+        };
+
+        usageInstance = RaidBuffs[playerName]["Usages"][usageId];
+    end
+end
+
 function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, usageList, regShots)
     regShots = regShots
     if regShots == nil then regShots = true; end
@@ -256,7 +285,7 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
         usageList[playerName]["Count"] = 0;
     end
 
-    if curRaid["Players"][playerName] == nil then
+    if curRaid and curRaid["Players"][playerName] == nil then
         curRaid["Players"][playerName] = {};
         curRaid["Players"][playerName]["MaxUsages"] = 0;
         curRaid["Players"][playerName]["Class"] = playerClass;
@@ -278,7 +307,7 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
             ["inEncIdx"] = cnt;
         };
 
-        if cnt > curRaid["Players"][playerName]["MaxUsages"] then
+        if curRaid and cnt > curRaid["Players"][playerName]["MaxUsages"] then
             curRaid["Players"][playerName]["MaxUsages"] = cnt;
         end
 
@@ -343,9 +372,9 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
         if curEncounter and curEncounter["Stage"]<2 then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
     end
 
-    if etalon["Type"] == "A" and curRaid then
+    if etalon["Type"] == "A" and RaidBuffs then
         local duration = strsplit("/", usageInfo);
-        raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, RaidBuffs, false);
+        raidRegisterPlayerInBuffs(playerClass, playerName, usageId, usageInfo);
     end
 end
 
@@ -637,9 +666,7 @@ function TWObs_OnEvent(...)
 
     -- raidCheck inited
     if event == "READY_CHECK" then
-        if curRaid then
-            RaidBuffs = {};
-        end
+        RaidBuffs = {};
 
         local playerName, realm = UnitName("player")
         if arg1 == playerName then shoutBuffs(); end
