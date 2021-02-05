@@ -595,6 +595,22 @@ function handleEnteringWorld(isLogin, isReload)
 
 end
 
+local RAID_DELETE_TIME = 14 * 24 * 60 * 60; -- 14 days before delete raid info
+function checkObsoliteRaids()
+    local ctime =  GetServerTime();
+
+    for i, raid in pairs(RaidUsageLog["Raids"]) do           
+        if not raid["deleted"] and ctime - raid["TS"] > RAID_DELETE_TIME then
+            RaidUsageLog["Raids"][i]["Deleted"] = true;
+            RaidUsageLog["Raids"][i]["RaidName"] = RaidUsageLog["Raids"][i]["RaidName"] .. "(удалён)";
+            RaidUsageLog["Raids"][i]["Players"] = {};
+            RaidUsageLog["Raids"][i]["Buffs"] = {};
+            RaidUsageLog["Raids"][i]["Encounters"] = {}; 
+        end
+
+    end
+end
+
 function TWObs_OnEvent(...)
     local event, arg1, arg2, arg3, arg4 = select(1,...);
 
@@ -662,6 +678,8 @@ function TWObs_OnEvent(...)
         end
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
+
+        checkObsoliteRaids();
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
@@ -884,8 +902,11 @@ function TWOBS_raid_dropdown_OnLoad(self)
     if self == _G["TWOBS_export_class_dropdown"] then func = scfExport; end
 
     for i, raid in pairs(RaidUsageLog["Raids"]) do
-        local raidStr = raid["Date"].. ": " ..raid["RaidName"] .. " ("..i..")";
-        addDropDownButton(raidStr, i, selectRaid);
+        if not raid["Deleted"] then
+            local raidStr = raid["Date"].. ": " ..raid["RaidName"] .. " ("..i..")";
+            addDropDownButton(raidStr, i, selectRaid);
+
+        end
     end
 
     
