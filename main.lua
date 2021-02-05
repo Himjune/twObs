@@ -618,14 +618,14 @@ function TWObs_OnEvent(...)
         local prefix, message, chat, sender = select(2,...);
 
 
-        if prefix == "D4C" then
+        if prefix == "D4C" and twobsSettings and twobsSettings["isTracking"] then
             handleDBMevent(strsplit("\t", message));
         end
 
         if prefix == "TWOBS" then
             local type, playerStr, usageData = strsplit("|", message);
 
-            if type == "SH" then
+            if type == "SH" and twobsSettings and twobsSettings["isTracking"] then
                 raidRegisterPlayerUsage(playerStr, usageData);
             end
 
@@ -675,6 +675,7 @@ function TWObs_OnEvent(...)
             twobsSettings["classFilter"] = "ALL";
             twobsSettings["shoutEverywhere"] = false;
             twobsSettings["selectedRaid"] = 1;
+            twobsSettings["isTracking"] = false;
         end
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
@@ -682,7 +683,7 @@ function TWObs_OnEvent(...)
         checkObsoliteRaids();
     end
 
-    if event == "PLAYER_ENTERING_WORLD" then
+    if event == "PLAYER_ENTERING_WORLD" and twobsSettings and twobsSettings["isTracking"] then
         handleEnteringWorld(arg1, arg2);
     end
 
@@ -692,37 +693,6 @@ function TWObs_OnEvent(...)
 
         local playerName, realm = UnitName("player")
         if arg1 == playerName then shoutBuffs(); end
-    end
-
-    if event == "PLAYER_REGEN_ENABLED" then
-        local deadOrGhost = UnitIsDeadOrGhost("player");
-        local localizedClass, englishClass, classIndex = UnitClass("player");
-        local playerName, realm = UnitName("player");
-    
-        local msg = "ST|"..   englishClass.."/"..playerName   .."|"..   "AVOID".."/";
-        if deadOrGhost then 
-            msg = msg.."DEAD";
-        else
-            msg = msg.."ALIVE";
-        end
-
-        --C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
-    end
-    
-    if event == "PLAYER_REGEN_DISABLED" then
-
-        local deadOrGhost = UnitIsDeadOrGhost("player");
-        local localizedClass, englishClass, classIndex = UnitClass("player");
-        local playerName, realm = UnitName("player");
-    
-        local msg = "ST|"..   englishClass.."/"..playerName   .."|"..   "ENGAGE".."/";
-        if deadOrGhost then 
-            msg = msg.."DEAD";
-        else
-            msg = msg.."ALIVE";
-        end
-
-        --C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID");
     end
 
     if event == "RAID_INSTANCE_WELCOME" then
@@ -928,6 +898,13 @@ SlashCmdList["TWOBS"] = function(msg)
         C_ChatInfo.SendAddonMessage("TWOBS", "EC|START", "RAID");
         done = true;
     end
+    
+    if msg == "notadmin" then
+        if twobsSettings then twobsSettings["isTracking"] = false;
+        print("Аддон больше не записывает сообщения, а только отсылает их офицерам.");
+
+        done = true;
+    end
    
     if msg == "end" then
         C_ChatInfo.SendAddonMessage("TWOBS", "EC|END", "RAID");
@@ -939,12 +916,14 @@ SlashCmdList["TWOBS"] = function(msg)
     end
 
     if msg == "exp" then
-    _G["TWOBS_export"]:Show();
+        if twobsSettings then twobsSettings["isTracking"] = true;
+        _G["TWOBS_export"]:Show();
         done = true;
     end
 
     if msg == "eta" then
-    _G["TWObs_Frame"]:Show();
+        if twobsSettings then twobsSettings["isTracking"] = true;
+        _G["TWObs_Frame"]:Show();
         done = true;
     end
     
