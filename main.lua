@@ -791,7 +791,7 @@ function TWOBS_class_dropdown_OnLoad(self)
     if self == _G["TWOBS_export_class_dropdown"] then func = scfExport; end
 
     addDropDownButton("Все классы", "ALL", func);
-    addDropDownButton("Войны", "WARRIOR", func);
+    addDropDownButton("Воины", "WARRIOR", func);
     addDropDownButton("Жрецы", "PRIEST", func);
     addDropDownButton("Маги", "MAGE", func);
     addDropDownButton("Колдуны", "WARLOCK", func);
