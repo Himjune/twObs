@@ -293,7 +293,8 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
     end
 
     if usageType == "A" then
-        RaidEtalons[usageId]["Type"] = usageType,
+        RaidEtalons[usageId]["Type"] = usageType;
+        etalon["Type"] = usageType;
     end
 
     return etalon;
