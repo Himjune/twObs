@@ -179,21 +179,21 @@ function renderBuffs()
     local classFilter = twobsSettings["classFilter"];
     local result = "";
 
-    if not RaidBuffs then return "Рейд пуст"; end
+    if not RaidBuffs then return "Нет информации по рейдовым баффам. Проведите проверку готовности и для полной информации дождитесь всех"; end
     
     local pIdx = 0;
     local idx = 0;
 
     for playerName, playerInfo in pairs(RaidBuffs) do
-        
+
         pIdx = pIdx + 1;
         if classFilter == "ALL" or playerInfo["Class"] == classFilter then
-            result = result .. pIdx .. ")" .. playerName .. " - " .. playerInfo["Class"] .. "\n";
+            result = result .. pIdx .. ")  " .. playerName .. " - " .. playerInfo["Class"] .. "\n";
 
             idx = 0;
             for usageName, usageInfo in pairs(playerInfo["Usages"]) do
                 idx = idx + 1;
-                result = result .. "    " .. "(" .. idx .. ")" .. RaidEtalons[usageName]["displayName"] .. "\n";
+                result = result .. "    " .. "(" .. idx .. ")  " .. RaidEtalons[usageName]["displayName"] .. "\n";
             end
 
             result = result .. "\n" .. "\n";
