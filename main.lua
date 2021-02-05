@@ -193,10 +193,10 @@ function renderBuffs()
             idx = 0;
             for usageName, usageInfo in pairs(playerInfo["Usages"]) do
                 idx = idx + 1;
-                result = result .. "    " .. "(" .. idx .. ")  " .. RaidEtalons[usageName]["displayName"] .. "\n";
+                result = result .. "    " .. "(" .. idx .. ")  " .. RaidEtalons[usageName]["displayName"] .. "\n                Осталось целых " .. usageInfo["usageInfo"] .. " мин;\n\n";
             end
 
-            result = result .. "\n" .. "\n";
+            result = result .. "\n\n\n";
         end
     end
 
@@ -450,6 +450,7 @@ function secondsLeftToStr(timeLeft)
     local minsLeft = math.floor(timeLeft/60);
     --local secsLeft = timeLeft % 60;
     local strLeft = minsLeft..""--..secsLeft;
+    if minsLeft <= 0 then strLeft = "беск."; end
 
     return strLeft;
 end
