@@ -13,7 +13,6 @@ end
 function endEncounter()
     inEncounter = false;
     curEncounter["isActive"] = false;
-    --print("ending encounter");
 end
 
 
@@ -31,8 +30,6 @@ end
 function formEncountersLine(RaidNo)
     local line = CSV_DELIMITRIER;
 
-    --print("fEL", RaidNo);
-    --print("fEL2f", RaidUsageLog["Raids"][RaidNo]);
     for i, encounter in pairs(RaidUsageLog["Raids"][RaidNo]["Encounters"]) do   
         line = line .. "(" .. encounter["EncNo"] .. ")" .. encounter["EncName"] .. CSV_DELIMITRIER .. 'EP' .. CSV_DELIMITRIER;
     end
@@ -58,7 +55,6 @@ end
 function insertImportant(importantsList, encIdx, usageId, usageName, price)
     local cnt = importantUsages[encIdx]["LinesCnt"];
     if not importantsList[encIdx]["Usages"][usageId] then
-        print()
         importantsList[encIdx]["Usages"][usageId] = true;
 
         cnt = cnt+1;
@@ -199,26 +195,22 @@ function checkEncounterStage()
             engagedAmount = engagedAmount + 1;
         end
     end
-
-    --print("CHK e p", engagedAmount, '/', playersAmount, "S:", curEncounter["Stage"]);
-
     
     if engagedAmount > 0 then
         if curEncounter["Stage"] == 0 then
             curEncounter["Stage"] = 1; -- if stage was INCOMING and we have fighting players goto ACTIVE stage
-            --print("ACTIVE NOW", curEncounter["Stage"]);
+            if twobsSettings["stagesMsgs"] then print("ACTIVE NOW", curEncounter["Stage"]); end
         end
     else
         -- there is no fighting players, so if stage was ACTIVE goto ENDED stage
         if curEncounter["Stage"] == 1 then
             curEncounter["Stage"] = 2;
-            --print("ENDED NOW", curEncounter["Stage"]);
+            if twobsSettings["stagesMsgs"] then print("ENDED NOW", curEncounter["Stage"]); end
         end
     end
 
     -- recheck while encounter not ENDED
     if curEncounter["Stage"] < 2 then
-        --print("SCHED AGAIN", curEncounter["Stage"]);
         C_Timer.After(CHECK_TIMER_SECS, checkEncounterStage);
     end
 end
@@ -314,10 +306,6 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
     local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
     local playerClass, playerName = strsplit("/", playerStr);
 
-    if twobsSettings["printShouts"] then
-        print("REC", playerStr, usageData);
-    end
-
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
     if etalon["isWorldBuff"] then
@@ -355,8 +343,9 @@ function raidEncounterInit(tarName)
         curRaid["Encounters"][encIdx]["MaxCount"] = 0;
 
     curEncounter = curRaid["Encounters"][encIdx];
+    
+    if twobsSettings["stagesMsgs"] then print("encINIT", curEncounter["EncName"], curEncounter["isActive"]); end
     checkEncounterStage();
-    --print("encINIT", curEncounter["EncName"], curEncounter["isActive"])
 end
 
 function raidInitRaid(raidName)
@@ -418,8 +407,7 @@ function shout(spellType, spellName, spellId, spellInfo)
     local msg = "SH|"..   englishClass.."/"..playerName   .."|"..   spellType.."/"..spellName.."/"..spellId.."/"..spellInfo;
     
     local instName, instType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
-    if twobsSettings["shoutEverywhere"] or instType == "raid" then
-        print("SHOUTING", msg);
+    if twobsSettings["shoutEverywhere"] or instType == "raid" or instType == "party" then
         C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
     end
 end
@@ -488,7 +476,6 @@ function AddEtalonStr(i, isImportant, isNew, isWB, type, etalonName, displayName
     local displayNameStr = displayName;
     if isNew then displayNameStr = "* "..displayNameStr; end
 
-    --print(_G[ETALON_BTN_PREFIX .. i .. "Important"], _G[ETALON_BTN_PREFIX .. i .. "Important"]:GetChecked());
     frame:SetAttribute("usageId", etalonName);
     _G[ETALON_BTN_PREFIX .. i .. "Important"]:SetChecked(isImportant);
     _G[ETALON_BTN_PREFIX .. i .. "Id"]:SetText(etalonName);
@@ -582,17 +569,9 @@ function TWObs_OnEvent(...)
     end
     
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
-        local i=1;
-        for i=1,40 do
-            if UnitAffectingCombat("raid"..i) then
-                print("R"..i, UnitAffectingCombat("raid"..i));
-            end
-        end
-
         local unit, castGUID, spellId = select(2,...);
         local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
 
-        --if inEncounter then shout("I", spellName, spellId, "INSTANT&"); end
         shout("I", spellName, spellId, "INSTANT&");
     end
 
@@ -673,8 +652,7 @@ function TWObs_OnEvent(...)
     end
 
     -- me confirmed readycheck
-    if event == "READY_CHECK_CONFIRM" then        
-        print("SHOUT ON CHK");
+    if event == "READY_CHECK_CONFIRM" then    
         if arg1 == "player" and arg2 then shoutBuffs(); end
     end
 end
@@ -698,7 +676,6 @@ function TWOBS_showEtalons()
     local filter = "ALL";
     if twobsSettings and twobsSettings["classFilter"] then filter = twobsSettings["classFilter"]; end
 
-    print("SORT");
     local keys = {};
     for etalonName, etalonInfo in pairs(RaidEtalons) do
         if filter == "ALL" or etalonInfo["class"][filter] then
@@ -708,14 +685,12 @@ function TWOBS_showEtalons()
     end
 
     table.sort(keys, function(a, b) 
-        print ("A B", a, b);
         return RaidEtalons[a]["displayName"]:upper() < RaidEtalons[b]["displayName"]:upper();
     end);
 
     idx = 0;
     for _,k in pairs(keys) do
         idx = idx+1;
-        print("PR", k);
         AddEtalonStr(idx, RaidEtalons[k]["isImportant"], RaidEtalons[k]["isNew"], RaidEtalons[k]["isWorldBuff"],
                         RaidEtalons[k]["Type"], k, RaidEtalons[k]["displayName"], RaidEtalons[k]["price"]);
     end
@@ -776,7 +751,6 @@ function TWOBS_EtalonButton_Save()
 end
 
 function selectClassFilter(self, dropDownFrame)
-    --print("sCF", self.value);
     twobsSettings["classFilter"] = self.value;
     UIDropDownMenu_SetSelectedValue(dropDownFrame, self.value);
 
@@ -825,7 +799,6 @@ end
 
 
 function selectRaid(self)
-    --print("sR", self.value);
     twobsSettings["selectedRaid"] = self.value;
     UIDropDownMenu_SetSelectedValue(_G["TWOBS_export_raid_dropdown"], self.value);
 
