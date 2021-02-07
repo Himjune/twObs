@@ -219,7 +219,7 @@ end
 --  RAID FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
 
-local CHECK_TIMER_SECS = 1;
+local CHECK_TIMER_SECS = 60;
 function checkEncounterStage()
     local playersAmount = GetNumGroupMembers();
     if playersAmount == 0 or (not curEncounter) then return; end
