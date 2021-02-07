@@ -2,6 +2,8 @@ local curRaid = nil;
 local curEncounter = nil;
 local curEtalonEdit = nil;
 
+local myGuildRank = 3;
+
 local VERSION = "1.01(05-02-20)";
 
 local RaidBuffs = nil;
@@ -617,14 +619,14 @@ function TWObs_OnEvent(...)
         local prefix, message, chat, sender = select(2,...);
 
 
-        if prefix == "D4C" and twobsSettings and twobsSettings["isTracking"] then
+        if prefix == "D4C" and ((twobsSettings and twobsSettings["isTracking"]) or myGuildRank <= 2) then
             handleDBMevent(strsplit("\t", message));
         end
 
         if prefix == "TWOBS" then
             local type, playerStr, usageData = strsplit("|", message);
 
-            if type == "SH" and twobsSettings and twobsSettings["isTracking"] then
+            if type == "SH" and ((twobsSettings and twobsSettings["isTracking"]) or myGuildRank <= 2) then
                 raidRegisterPlayerUsage(playerStr, usageData);
             end
 
@@ -681,6 +683,7 @@ function TWObs_OnEvent(...)
 
         local regPrefixResult = C_ChatInfo.RegisterAddonMessagePrefix("TWOBS");
 
+        _, _, myGuildRank, _ = GetGuildInfo("player");
         checkObsoliteRaids();
     end
 
