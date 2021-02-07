@@ -872,14 +872,19 @@ function TWOBS_raid_dropdown_OnLoad(self)
     if self == _G["TWOBS_etalons_class_dropdown"] then func = scfEtalons; end
     if self == _G["TWOBS_export_class_dropdown"] then func = scfExport; end
 
-    for i, raid in pairs(RaidUsageLog["Raids"]) do
+    local i = RaidUsageLog["Count"];
+    local LIMIT = 20;
+
+    while i > 0 and LIMIT > 0 do
+        local raid = RaidUsageLog["Raids"][i];
         if not raid["Deleted"] then
             local raidStr = raid["Date"].. ": " ..raid["RaidName"] .. " ("..i..")";
             addDropDownButton(raidStr, i, selectRaid);
-
         end
-    end
 
+        i = i - 1;
+        LIMIT = LIMIT - 1;
+    end
     
     local selected = 1;
     if twobsSettings["selectedRaid"] then
