@@ -116,6 +116,17 @@ function importantsForPlayerOnAllEncounters(playerName, encountersList)
     return maxPerEncounter, importantUsages;
 end
 
+function getColLetter(n)
+    local result = "";
+    while n>0 do
+        result = string.char( 65 + (n-1)%26 ) .. result;
+        n = math.floor((n-1)/26);
+    end
+
+    return result;
+end
+
+local gLineNo = 1;
 function formPlayerLinesForAllEncounters(playerName, encountersList)
     local lines = playerName;
     local maxPerEncounter = 0;
@@ -127,8 +138,8 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
     maxPerEncounter, importantUsagesPerEncounters = importantsForPlayerOnAllEncounters(playerName, encountersList);
     
     for lineNo=1,maxPerEncounter do 
-
         for encNo=1,encAmount do
+
             if lineNo == 1 then
                 playerSum = playerSum + importantUsagesPerEncounters[encNo]["epSum"];
             end
@@ -141,24 +152,26 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
             end
         end
 
+        gLineNo = gLineNo+1;
         lines = lines .. "\n";
     end
 
-    playerSum = math.floor(playerSum+0.9999); -- ROUND UP
+    -- empty line for some manual inserts
+    gLineNo = gLineNo+1;
+    lines = lines .. "\n";
 
     -- SUM LINE
-    lines = lines .. "\n";
-    lines = lines .. playerSum .. CSV_DELIMITRIER;
+    --local strEP = floatToCSV(importantUsagesPerEncounters[encNo]["epSum"]); --old rep
+    local funcStr = string.format("=ОКРУГЛВВЕРХ(СУММ(B%d:AAA%d);0)", gLineNo, gLineNo);
+    lines = lines .. funcStr .. CSV_DELIMITRIER;
     for encNo=1,encAmount do
-        local strEP = floatToCSV(importantUsagesPerEncounters[encNo]["epSum"]);
-        lines = lines .. "" .. CSV_DELIMITRIER .. strEP .. CSV_DELIMITRIER
+        funcStr = string.format("=СУММ(%s%d:%s%d)", getColLetter(1+encNo*2), gLineNo-maxPerEncounter-1, getColLetter(1+encNo*2), gLineNo-1);
+        lines = lines .. "" .. CSV_DELIMITRIER .. funcStr .. CSV_DELIMITRIER
     end
 
-    -- Two empty lines to separate player
-    lines = lines .. "\n";
+    gLineNo = gLineNo+1;
     lines = lines .. "\n";
 
-    lines = lines .. "\n";
     return lines;
 end
 
@@ -169,9 +182,10 @@ function renderCSV()
 
     result = result .. formEncountersLine(RaidNo) .."\n";
     
+    -- players printing starts from the second line
+    gLineNo = 2;
     for playerName, playerInfo in pairs(RaidUsageLog["Raids"][RaidNo]["Players"]) do
         if classFilter == "ALL" or playerInfo["Class"] == classFilter then
-            
             result = result .. formPlayerLinesForAllEncounters(playerName, RaidUsageLog["Raids"][RaidNo]["Encounters"]);
         end
     end
