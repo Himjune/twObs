@@ -4,7 +4,7 @@ local curEtalonEdit = nil;
 
 local myGuildRank = 3;
 
-local VERSION = "1.02(07-02-21)";
+local VERSION = "1.03(08-02-21)";
 
 local RaidBuffs = nil;
 
@@ -233,6 +233,7 @@ end
 --  RAID FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
 
+-- TODO: Should check multiple ticks with some period
 local CHECK_TIMER_SECS = 60;
 function checkEncounterStage()
     local playersAmount = GetNumGroupMembers();
