@@ -103,7 +103,9 @@ function importantsForPlayerOnAllEncounters(playerName, encountersList)
                     if RaidEtalons[usageName]["isWorldBuff"] then
                         newCnt = insertImportant(importantUsages, 1, usageName, RaidEtalons[usageName]["displayName"], RaidEtalons[usageName]["price"]);
                     else
-                        newCnt = insertImportant(importantUsages, encIdx, usageName, RaidEtalons[usageName]["displayName"], RaidEtalons[usageName]["price"]);
+                        if encIdx > 1 then
+                            newCnt = insertImportant(importantUsages, encIdx, usageName, RaidEtalons[usageName]["displayName"], RaidEtalons[usageName]["price"]);
+                        end
                     end
 
                 end
