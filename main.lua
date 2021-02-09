@@ -99,6 +99,7 @@ function importantsForPlayerOnAllEncounters(playerName, encountersList)
             for usageName, usageInfo in pairs(encounter["Usages"][playerName]["Usages"]) do
 
                 if RaidEtalons[usageName]["isImportant"] then
+                    print(playerName, "TAGe", encIdx, usageName, RaidEtalons[usageName]["isWorldBuff"]);
                     if RaidEtalons[usageName]["isWorldBuff"] then
                         newCnt = insertImportant(importantUsages, 1, usageName, RaidEtalons[usageName]["displayName"], RaidEtalons[usageName]["price"]);
                     else
@@ -128,7 +129,7 @@ end
 
 local gLineNo = 1;
 function formPlayerLinesForAllEncounters(playerName, encountersList)
-    local lines = playerName;
+    local lines = "";
     local maxPerEncounter = 0;
     local encAmount = table.getn(encountersList);
 
@@ -158,7 +159,7 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
 
     -- empty line for some manual inserts
     gLineNo = gLineNo+1;
-    lines = lines .. "\n";
+    lines = lines .. "\n" .. playerName .. "\n";
 
     -- SUM LINE
     --local strEP = floatToCSV(importantUsagesPerEncounters[encNo]["epSum"]); --old rep
