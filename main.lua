@@ -159,7 +159,7 @@ function formPlayerLinesForAllEncounters(playerName, encountersList)
 
     -- empty line for some manual inserts
     gLineNo = gLineNo+1;
-    lines = lines .. "\n" .. playerName .. "\n";
+    lines = lines .. playerName .. "\n";
 
     -- SUM LINE
     --local strEP = floatToCSV(importantUsagesPerEncounters[encNo]["epSum"]); --old rep
