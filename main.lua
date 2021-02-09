@@ -14,6 +14,7 @@ local CSV_DELIMITRIER = "\t"
 function startEncounter()
     inEncounter = true;
     shoutBuffs();
+    checkEncounterStage();
 end
 
 function endEncounter()
@@ -98,7 +99,7 @@ function importantsForPlayerOnAllEncounters(playerName, encountersList)
             for usageName, usageInfo in pairs(encounter["Usages"][playerName]["Usages"]) do
 
                 if RaidEtalons[usageName]["isImportant"] then
-                    print(playerName, "TAGe", encIdx, usageName, RaidEtalons[usageName]["isWorldBuff"]);
+                    --print(playerName, "TAGe", encIdx, usageName, RaidEtalons[usageName]["isWorldBuff"]);
                     if RaidEtalons[usageName]["isWorldBuff"] then
                         newCnt = insertImportant(importantUsages, 1, usageName, RaidEtalons[usageName]["displayName"], RaidEtalons[usageName]["price"]);
                     else
@@ -236,7 +237,7 @@ end
 ---------------------------------------------------------------------------------------------------------------------------
 
 -- TODO: Should check multiple ticks with some period
-local CHECK_TIMER_SECS = 60;
+local CHECK_TIMER_SECS = 45;
 function checkEncounterStage()
     local playersAmount = GetNumGroupMembers();
     if playersAmount == 0 or (not curEncounter) then return; end
@@ -258,6 +259,8 @@ function checkEncounterStage()
         if curEncounter["Stage"] == 1 then
             curEncounter["Stage"] = 2;
             if twobsSettings["stagesMsgs"] then print("ENDED NOW", curEncounter["Stage"]); end
+            
+            shout("S", "encCheckCount", "0", encShouts);
         end
     end
 
@@ -305,12 +308,14 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
         usageList[playerName]["Class"] = playerClass;
         usageList[playerName]["Usages"] = {};
         usageList[playerName]["Count"] = 0;
+        usageList[playerName]["shoutsCNT"] = 0;
     end
 
     if curRaid and curRaid["Players"][playerName] == nil then
         curRaid["Players"][playerName] = {};
         curRaid["Players"][playerName]["MaxUsages"] = 0;
         curRaid["Players"][playerName]["Class"] = playerClass;
+        curRaid["Players"][playerName]["CNT"] = 0;
     end
 
     -- TODO Probably i messed up everything by mixing GetTime() and GetServerTime()
@@ -337,6 +342,7 @@ function raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageIn
     end
 
     local shotsCnt = usageInstance["shotsCnt"] +1;
+    usageList[playerName]["shoutsCNT"] = usageList[playerName]["shoutsCNT"] +1;
 
     if regShots then
         usageInstance["shotsCnt"] = shotsCnt;
@@ -385,6 +391,16 @@ end
 function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageInfo param
     local usageType, usageName, usageId, usageInfo = strsplit("/", usageData);
     local playerClass, playerName, playerVersion = strsplit("/", playerStr);
+
+    -- cut system msg
+    if usageType == "S" then
+        if usageName == "encCheckCount" and curEncounter then
+            if twobsSettings and twobsSettings["stagesMsgs"] then print(playerStr, "chkSum", usageInfo); end
+            curEncounter["Usages"][playerName]["checkCNT"] = usageInfo;
+        end
+
+        return;
+    end
 
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
