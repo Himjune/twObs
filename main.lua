@@ -7,6 +7,7 @@ local myGuildRank = 3;
 local VERSION = "1.031(08-02-21)";
 
 local RaidBuffs = nil;
+local encShouts = 0;
 
 local CSV_DELIMITRIER = "\t"
 
