@@ -21,7 +21,6 @@ function endEncounter()
     curEncounter["isActive"] = false;
 end
 
-
 ---------------------------------------------------------------------------------------------------------------------------
 --  RENDER FUNCS
 ---------------------------------------------------------------------------------------------------------------------------
@@ -389,6 +388,7 @@ function raidRegisterPlayerUsage(playerStr, usageData) -- prob should add usageI
 
     local etalon = tryGetEtalon(usageType, usageName, usageId, usageInfo, playerClass);
 
+    --print("REGe", usageName, usageId, "for", playerName);
     if curEncounter and curEncounter["Stage"]<2 then raidRegisterPlayerInUsageList(playerClass, playerName, usageId, usageInfo, curEncounter["Usages"]); end
 
     if etalon["Type"] == "A" and RaidBuffs then
@@ -486,11 +486,17 @@ function shout(spellType, spellName, spellId, spellInfo)
     
     local instName, instType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic, instanceMapId, lfgID = GetInstanceInfo();
 
-    C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
+    encShouts = encShouts + 1;
+    --C_Timer.After(0.01, function ()
+        C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
+    --end);
 end
 
 function shoutBuffs()
     local i = 1;
+    local buffs = {};
+    encShouts = 0;
+
     while UnitAura("player", i, "HELPFUL") do
 
         local name, rank, icon, count, duration, expirationTime, _, unitCaster, _, spellId = UnitAura("player", i, "HELPFUL");
@@ -498,7 +504,8 @@ function shoutBuffs()
         local timeLeft = expirationTime - GetTime();
         local strLeft = secondsLeftToStr(timeLeft);
 
-        shout("A", name, spellId, strLeft);
+        --shout("A", name, spellId, strLeft);
+        table.insert( buffs, {["name"]=name, ["id"]=spellId, ["left"]=strLeft });
 
         i = i + 1;
     end
@@ -509,15 +516,23 @@ function shoutBuffs()
         local strLeft = secondsLeftToStr(timeLeft);
         local enchName = "Ench:"..mainHandEnchantID; --getEnchantById(mainHandEnchantID);
 
-        shout("A", "Улучшение Правой Руки", "E"..mainHandEnchantID, strLeft);
+        --shout("A", "Улучшение Правой Руки", "E"..mainHandEnchantID, strLeft);
+        table.insert( buffs, {["name"]="Улучшение Правой Руки", ["id"]="E"..mainHandEnchantID, ["left"]=strLeft });
     end
     if hasOffHandEnchant then
         local timeLeft = math.floor(offHandExpiration/1000);
         local strLeft = secondsLeftToStr(timeLeft);
         local enchName = "Ench:"..offHandEnchantId; --getEnchantById(offHandEnchantId);
 
-        shout("A", "Улучшение Левой Руки", "E"..offHandEnchantId, strLeft);
+        --shout("A", "Улучшение Левой Руки", "E"..offHandEnchantId, strLeft);
+        table.insert( buffs, {["name"]="Улучшение Левой Руки", ["id"]="E"..offHandEnchantId, ["left"]=strLeft });
     end
+
+    local ctn = 1;
+    C_Timer.NewTicker(0.5, function()
+        shout("A", buffs[ctn]["name"], buffs[ctn]["id"], buffs[ctn]["left"]);
+        ctn = ctn+1;
+    end, table.getn(buffs));
 end
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -931,7 +946,7 @@ SlashCmdList["TWOBS"] = function(msg)
         }
         RaidEtalons = {};
 
-        print("Аддон больше не записывает сообщения, а только отсылает их офицерам.");
+        print("Аддон работает. Режим: основной - отправка КЛам");
 
         done = true;
     end
