@@ -380,10 +380,10 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
     -- overwrite buffs in etalons
     if usageType == "A" then
         RaidEtalons[usageId]["Type"] = "A";
-        RaidEtalons[usageId]["isImportant"] = true;
+        if etalon["isNew"] then RaidEtalons[usageId]["isImportant"] = true; end
         
         etalon["Type"] = "A";
-        etalon["isImportant"] = true;
+        etalon["isImportant"] = RaidEtalons[usageId]["isImportant"];
     end
 
     return etalon;
