@@ -4,7 +4,7 @@ local curEtalonEdit = nil;
 
 local myGuildRank = 3;
 
-local VERSION = "1.035(09-02-21)";
+local VERSION = "1.036(10-02-21)";
 
 local RaidBuffs = nil;
 local encShouts = 0;
@@ -380,7 +380,7 @@ function tryGetEtalon(usageType, usageName, usageId, usageInfo, userClass)
     -- overwrite buffs in etalons
     if usageType == "A" then
         RaidEtalons[usageId]["Type"] = "A";
-        if etalon["isNew"] then RaidEtalons[usageId]["isImportant"] = true; end
+        if RaidEtalons[usageId]["isNew"] then RaidEtalons[usageId]["isImportant"] = true; end
         
         etalon["Type"] = "A";
         etalon["isImportant"] = RaidEtalons[usageId]["isImportant"];
