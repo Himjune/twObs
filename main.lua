@@ -239,7 +239,7 @@ end
 
 -- TODO: Should check multiple ticks with some period
 local CHECK_TIMER_SECS = 5;
-local CHECK_TICKS = 18;
+local CHECK_TICKS = 12;
 local chkEncCnt = 0;
 local isTicker = false;
 function startEncounterTicker()
