@@ -15,7 +15,7 @@ local CSV_DELIMITRIER = "\t"
 function startEncounter()
     inEncounter = true;
     shoutBuffs();
-    checkEncounterStage();
+    startEncounterTicker();
 end
 
 function endEncounter()
@@ -238,7 +238,18 @@ end
 ---------------------------------------------------------------------------------------------------------------------------
 
 -- TODO: Should check multiple ticks with some period
-local CHECK_TIMER_SECS = 45;
+local CHECK_TIMER_SECS = 5;
+local CHECK_TICKS = 18;
+local chkEncCnt = 0;
+local isTicker = false;
+function startEncounterTicker()
+    if isTicker then return; end
+
+    isTicker = true;
+    chkEncCnt = 0;
+    checkEncounterStage();
+end
+
 function checkEncounterStage()
     local playersAmount = GetNumGroupMembers();
     if playersAmount == 0 or (not curEncounter) then return; end
@@ -249,25 +260,41 @@ function checkEncounterStage()
             engagedAmount = engagedAmount + 1;
         end
     end
-    
-    if engagedAmount > 0 then
-        if curEncounter["Stage"] == 0 then
+
+    if curEncounter["Stage"] == 0 then
+        if twobsSettings["stagesMsgs"] then print("GONNA ENGAGE. NOW and TICKS:", curEncounter["Stage"], chkEncCnt); end
+        if engagedAmount > 0 then 
             curEncounter["Stage"] = 1; -- if stage was INCOMING and we have fighting players goto ACTIVE stage
             if twobsSettings["stagesMsgs"] then print("ACTIVE NOW", curEncounter["Stage"]); end
         end
-    else
-        -- there is no fighting players, so if stage was ACTIVE goto ENDED stage
+
+    else 
         if curEncounter["Stage"] == 1 then
-            curEncounter["Stage"] = 2;
-            if twobsSettings["stagesMsgs"] then print("ENDED NOW", curEncounter["Stage"]); end
-            
-            shout("S", "encCheckCount", "0", encShouts);
+            if engagedAmount > 0 then
+                chkEncCnt = 0;
+                if twobsSettings["stagesMsgs"] then print("NO END. NOW and TICKS:", curEncounter["Stage"], chkEncCnt); end
+            else
+                chkEncCnt = chkEncCnt +1;
+                if twobsSettings["stagesMsgs"] then print("GONNA END. NOW and TICKS:", curEncounter["Stage"], chkEncCnt); end
+                if chkEncCnt >= CHECK_TICKS then
+                    curEncounter["Stage"] = 2;
+                    if twobsSettings["stagesMsgs"] then print("ENDED NOW", curEncounter["Stage"]); end
+                    
+                    shout("S", "encCheckCount", "0", encShouts);
+
+                end
+
+            end
+
         end
     end
+
 
     -- recheck while encounter not ENDED
     if curEncounter["Stage"] < 2 then
         C_Timer.After(CHECK_TIMER_SECS, checkEncounterStage);
+    else
+        isTicker = false;
     end
 end
 
@@ -439,7 +466,6 @@ function raidEncounterInit(tarName)
     curEncounter = curRaid["Encounters"][encIdx];
     
     if twobsSettings["stagesMsgs"] then print("encINIT", curEncounter["EncName"], curEncounter["isActive"]); end
-    checkEncounterStage();
 end
 
 function raidInitRaid(raidName)
@@ -679,6 +705,7 @@ function TWObs_OnEvent(...)
             if type == "EC" and message == "EC|START" then
                 startEncounter();
             end
+
             if type == "EC" and message == "EC|END" then
                 endEncounter();
             end
