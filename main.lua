@@ -4,7 +4,7 @@ local curEtalonEdit = nil;
 
 local myGuildRank = 3;
 
-local VERSION = "1.036(10-02-21)";
+local VERSION = "1.037(11-02-21)";
 
 local RaidBuffs = nil;
 local encShouts = 0;
