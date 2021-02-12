@@ -4,7 +4,7 @@ local curEtalonEdit = nil;
 
 local myGuildRank = 3;
 
-local VERSION = "1.037(11-02-21)";
+local VERSION = "1.0371(12-02-21)";
 
 local RaidBuffs = nil;
 local encShouts = 0;
@@ -641,6 +641,7 @@ function handleEnteringWorld(isLogin, isReload)
     if not (type == "raid" or type == "party" or twobsSettings["registerAnyLoc"]) then
         return;
     end
+    shoutBuffs();
 
     if isReload then
         if cnt > 0 then 
