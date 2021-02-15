@@ -4,7 +4,7 @@ local curEtalonEdit = nil;
 
 local myGuildRank = 3;
 
-local VERSION = "1.0371(12-02-21)";
+local VERSION = "1.0372(15-02-21)";
 
 local RaidBuffs = nil;
 local encShouts = 0;
@@ -531,7 +531,11 @@ function shout(spellType, spellName, spellId, spellInfo)
 
     encShouts = encShouts + 1;
     --C_Timer.After(0.01, function ()
+    --print("SHT STD");
+    local ri = UnitInRaid("player");
+    if (ri) then
         C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
+    end
     --end);
 end
 
@@ -1002,6 +1006,8 @@ SlashCmdList["TWOBS"] = function(msg)
     end
      
     if msg == "stat" then
+        print("SHT");
+        shout("I", "TEST", 0, "tst");
         done = true;
     end
 
