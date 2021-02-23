@@ -4,7 +4,7 @@ local curEtalonEdit = nil;
 
 local myGuildRank = 3;
 
-local VERSION = "1.0372(15-02-21)";
+local VERSION = "1.0373(23-02-21)";
 
 local RaidBuffs = nil;
 local encShouts = 0;
@@ -925,7 +925,7 @@ function TWOBS_class_dropdown_OnLoad(self)
     addDropDownButton("Разбойники", "ROGUE", func);
     addDropDownButton("Друиды", "DRUID", func);
     addDropDownButton("Паладины", "PALADIN", func);
-    addDropDownButton("Шаманы", "WARLOCK", func);
+    addDropDownButton("Шаманы", "SHAMAN", func);
     addDropDownButton("Охотники", "HUNTER", func);
     
     local selected = "ALL";
