@@ -533,7 +533,8 @@ function shout(spellType, spellName, spellId, spellInfo)
     --C_Timer.After(0.01, function ()
     --print("SHT STD");
     local ri = UnitInRaid("player");
-    if (ri) then
+    local instName, instType = GetInstanceInfo();
+    if (ri and instType ~= "pvp") then
         C_ChatInfo.SendAddonMessage("TWOBS", msg, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
     end
     --end);
@@ -543,6 +544,8 @@ function shoutBuffs()
     local i = 1;
     local buffs = {};
     encShouts = 0;
+
+    local buffsList = ""
 
     while UnitAura("player", i, "HELPFUL") do
 
@@ -554,6 +557,8 @@ function shoutBuffs()
         --shout("A", name, spellId, strLeft);
         table.insert( buffs, {["name"]=name, ["id"]=spellId, ["left"]=strLeft });
 
+        if table.getn(buffs) > 1 then buffsList = buffsList .. "/"; end
+        buffsList = buffsList .. spellId;
         i = i + 1;
     end
 
@@ -565,6 +570,9 @@ function shoutBuffs()
 
         --shout("A", "Улучшение Правой Руки", "E"..mainHandEnchantID, strLeft);
         table.insert( buffs, {["name"]="Улучшение Правой Руки", ["id"]="E"..mainHandEnchantID, ["left"]=strLeft });
+
+        if table.getn(buffs) > 1 then buffsList = buffsList .. "/"; end
+        buffsList = buffsList .. spellId;
     end
     if hasOffHandEnchant then
         local timeLeft = math.floor(offHandExpiration/1000);
@@ -573,6 +581,15 @@ function shoutBuffs()
 
         --shout("A", "Улучшение Левой Руки", "E"..offHandEnchantId, strLeft);
         table.insert( buffs, {["name"]="Улучшение Левой Руки", ["id"]="E"..offHandEnchantId, ["left"]=strLeft });
+
+        if table.getn(buffs) > 1 then buffsList = buffsList .. "/"; end
+        buffsList = buffsList .. spellId;
+    end
+
+    local ri = UnitInRaid("player");
+    local instName, instType = GetInstanceInfo();
+    if (ri and instType ~= "pvp") then
+        C_ChatInfo.SendAddonMessage("TWOBS", "SB|"..   englishClass.."/"..playerName .."/"..VERSION  .."|"..buffsList, "RAID"); -- TODO - should swtich to GUILD or OFFICER (maybe u cannot write to officer?)
     end
 
     local ctn = 1;
@@ -706,7 +723,19 @@ function TWObs_OnEvent(...)
             if type == "SH" and ((twobsSettings and twobsSettings["isTracking"]) or myGuildRank <= 2) then
                 raidRegisterPlayerUsage(playerStr, usageData);
             end
-
+            
+            
+            if type == "SB" and ((twobsSettings and twobsSettings["isTracking"]) or myGuildRank <= 2) then
+                local tbl = { strsplit("/", usageData) }
+                for ind, spellId in pairs(tbl) do
+                    local spellName, rank, icon, castTime, minRange, maxRange, sId = GetSpellInfo(spellId);
+                    if not spellName then spellName = "Unkown(EnchProb)"; end
+                    -- SH|<CLASS>/<PLAYER>/VER|A/<NAME>/<SpellId>/<DURATION>?...
+                    print(ind, "SB", spellName, spellId)
+                    raidRegisterPlayerUsage(playerStr, "A/"..spellName.."/"..spellId.."/0");
+                end
+            end
+            
             if type == "EC" and message == "EC|START" then
                 startEncounter();
             end
