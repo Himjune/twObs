@@ -212,13 +212,13 @@ function renderBuffs()
         if classFilter == "ALL" or playerInfo["Class"] == classFilter then
             result = result .. pIdx .. ")  " .. playerName .. " - " .. playerInfo["Class"] .. " (v.:" .. playerInfo["Version"] .. ")\n";
 
-            idx = 0;
+            --[[idx = 0;
             for usageName, usageInfo in pairs(playerInfo["Usages"]) do
                 idx = idx + 1;
                 result = result .. "    " .. "(" .. idx .. ")  " .. RaidEtalons[usageName]["displayName"] .. "\n                Осталось целых " .. usageInfo["usageInfo"] .. " мин;\n\n";
-            end
+            end--]]
 
-            result = result .. "\n\n\n";
+            --result = result .. "\n\n\n";
         end
     end
 
