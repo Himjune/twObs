@@ -673,7 +673,7 @@ function handleEnteringWorld(isLogin, isReload)
 
 end
 
-local RAID_DELETE_TIME = 14 * 24 * 60 * 60; -- 14 days before delete raid info
+local RAID_DELETE_TIME = 7 * 24 * 60 * 60; -- 7 days before delete raid info
 function checkObsoliteRaids()
     local ctime =  GetServerTime();
 
