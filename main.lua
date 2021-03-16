@@ -678,7 +678,7 @@ function checkObsoliteRaids()
     local ctime =  GetServerTime();
 
     for i, raid in pairs(RaidUsageLog["Raids"]) do           
-        if not raid["deleted"] and ctime - raid["TS"] > RAID_DELETE_TIME then
+        if not raid["Deleted"] and ctime - raid["TS"] > RAID_DELETE_TIME then
             RaidUsageLog["Raids"][i]["Deleted"] = true;
             RaidUsageLog["Raids"][i]["RaidName"] = RaidUsageLog["Raids"][i]["RaidName"] .. "(удалён)";
             RaidUsageLog["Raids"][i]["Players"] = {};
