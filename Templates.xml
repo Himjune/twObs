@@ -48,6 +48,27 @@
 						</OnClick>
 					</Scripts>
 				</CheckButton>
+
+				<CheckButton name="$parentClassTrash" inherits="OptionsCheckButtonTemplate"  checked="false">
+					<HitRectInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0" />
+					</HitRectInsets>
+					<Size>
+						<AbsDimension x="20" y="20"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentImportant">
+							<Offset>
+								<AbsDimension x="540" y="0" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<Scripts>
+						<OnClick>
+							ToggleUsageClassTrash(self:GetParent():GetAttribute("usageId"), self:GetChecked());
+						</OnClick>
+					</Scripts>
+				</CheckButton>
 		</Frames>
 		<Layers>
 			<Layer level="BORDER">

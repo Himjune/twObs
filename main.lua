@@ -599,7 +599,7 @@ typesDict = {
 }
 
 local ETALON_BTN_PREFIX = "EtalonStr-"
-function AddEtalonStr(i, isImportant, isNew, isWB, type, etalonName, displayName, EP)
+function AddEtalonStr(i, isImportant, isNew, isWB, type, etalonName, displayName, EP, classTrash)
     local frame = _G[ETALON_BTN_PREFIX .. i];
     if frame == nil then 
         CreateFrame('Button', ETALON_BTN_PREFIX .. i, _G["Etalons_scrollframe_container"], "EtalonStrTemplate");
@@ -622,6 +622,7 @@ function AddEtalonStr(i, isImportant, isNew, isWB, type, etalonName, displayName
     _G[ETALON_BTN_PREFIX .. i .. "Type"]:SetText(typesDict[type]);
     _G[ETALON_BTN_PREFIX .. i .. "WB"]:SetChecked(isWB);
     _G[ETALON_BTN_PREFIX .. i .. "EP"]:SetText(EP);
+    _G[ETALON_BTN_PREFIX .. i .. "ClassTrash"]:SetChecked(classTrash);
     frame:Show();
 end
 
@@ -826,7 +827,7 @@ function TWOBS_showEtalons()
     for _,k in pairs(keys) do
         idx = idx+1;
         AddEtalonStr(idx, RaidEtalons[k]["isImportant"], RaidEtalons[k]["isNew"], RaidEtalons[k]["isWorldBuff"],
-                        RaidEtalons[k]["Type"], k, RaidEtalons[k]["displayName"], RaidEtalons[k]["price"]);
+                        RaidEtalons[k]["Type"], k, RaidEtalons[k]["displayName"], RaidEtalons[k]["price"], RaidEtalons[k]["classTrash"]);
     end
 
     --TWOBS_etalons_nodata_label:Hide();
@@ -942,6 +943,10 @@ function selectRaid(self)
     UIDropDownMenu_SetSelectedValue(_G["TWOBS_export_raid_dropdown"], self.value);
 
     TWOBS_formatExport();
+end
+
+function ToggleUsageClassTrash(usageId, value)
+    RaidEtalons[usageId]["classTrash"] = value;
 end
 
 function TWOBS_raid_dropdown_OnLoad(self)
