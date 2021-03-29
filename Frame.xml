@@ -189,7 +189,7 @@
 		</Scripts>
     </Frame>
 
-	<Frame name="TWOBS_export" parent="UIParent" hidden="true" enableMouse="true" frameStrata="DIALOG" movable="true" clampedToScreen="true">
+	<Frame name="TWOBS_export" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH" movable="true" clampedToScreen="true">
 		<Size>
 			<AbsDimension x="1200" y="600" />
 		</Size>
@@ -379,6 +379,24 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
+
+			<Button name="$parent_del_raid" inherits="GameMenuButtonTemplate" text="-">
+				<Size>
+					<AbsDimension x="25" y="25" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TWOBS_export_raid_dropdown">
+						<Offset>
+							<AbsDimension x="-10" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TWOBS_DelRaidButton_OnClick();
+					</OnClick>
+				</Scripts>
+			</Button>
 
 			<Frame name="TWOBS_export_class_dropdown" inherits="UIDropDownMenuTemplate" id="3">
 				<Anchors>
@@ -653,6 +671,103 @@
 			<OnDragStop>
 				self:StopMovingOrSizing();
 			</OnDragStop>
+			<OnShow>
+			</OnShow>
+		</Scripts>
+	</Frame>
+
+    <Frame name="TWOBS_raid_delete_popup" frameStrata="DIALOG" enableMouse="true" parent="UIParent" hidden="true" clampedToScreen="true">
+		<Size>
+			<AbsDimension x="300" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11"/>
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+		</Backdrop>
+
+		<Frames>
+			<Button name="TWOBS_raid_delete_cancel" inherits="GameMenuButtonTemplate" text="Отмена">
+				<Size>
+					<AbsDimension x="75" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						TWOBS_raid_delete_popup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="TWOBS_raid_delete_confirm" inherits="GameMenuButtonTemplate" text="Удалить">
+				<Size>
+					<AbsDimension x="75" y="30"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(799);
+						deleteRaid(twobsSettings["selectedRaid"]);
+						TWOBS_raid_delete_popup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="800" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="TWOBS_raid_delete_title" inherits="GameFontNormal" text="Рейд: ХХХХХ">
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		
+		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
 			<OnShow>
 			</OnShow>
 		</Scripts>

@@ -673,17 +673,21 @@ function handleEnteringWorld(isLogin, isReload)
 
 end
 
+function deleteRaid(i)
+    RaidUsageLog["Raids"][i]["Deleted"] = true;
+    RaidUsageLog["Raids"][i]["RaidName"] = RaidUsageLog["Raids"][i]["RaidName"] .. "(удалён)";
+    RaidUsageLog["Raids"][i]["Players"] = {};
+    RaidUsageLog["Raids"][i]["Buffs"] = {};
+    RaidUsageLog["Raids"][i]["Encounters"] = {}; 
+end
+
 local RAID_DELETE_TIME = 7 * 24 * 60 * 60; -- 7 days before delete raid info
 function checkObsoliteRaids()
     local ctime =  GetServerTime();
 
     for i, raid in pairs(RaidUsageLog["Raids"]) do           
         if not raid["Deleted"] and ctime - raid["TS"] > RAID_DELETE_TIME then
-            RaidUsageLog["Raids"][i]["Deleted"] = true;
-            RaidUsageLog["Raids"][i]["RaidName"] = RaidUsageLog["Raids"][i]["RaidName"] .. "(удалён)";
-            RaidUsageLog["Raids"][i]["Players"] = {};
-            RaidUsageLog["Raids"][i]["Buffs"] = {};
-            RaidUsageLog["Raids"][i]["Encounters"] = {}; 
+            deleteRaid(i)
         end
 
     end
@@ -853,6 +857,18 @@ function TWOBS_EtalonButton_OnClick(bName, button)
     _G["TWOBS_etalon_edit_popup"]:Show();
 end
 
+
+
+function TWOBS_DelRaidButton_OnClick()
+    local raidIdx = twobsSettings["selectedRaid"];
+    local raidToDelete = RaidUsageLog["Raids"][raidIdx];
+    local raidStr = "Удалить " .. raidToDelete["Date"].. ": " ..raidToDelete["RaidName"] .. " ("..raidIdx..") ?!" ;
+
+    _G["TWOBS_raid_delete_title"]:SetText(raidStr);
+
+    _G["TWOBS_raid_delete_popup"]:Show();
+end
+
 function TWOBS_EtalonButton_Save()
     local isValid = true;
 
@@ -913,6 +929,8 @@ function addDropDownButton(text, value, func)
 end
 
 function TWOBS_class_dropdown_OnLoad(self)
+    UIDropDownMenu_SetWidth(self, 95);
+
     local func = nil;
     if self == _G["TWOBS_etalons_class_dropdown"] then func = scfEtalons; end
     if self == _G["TWOBS_export_class_dropdown"] then func = scfExport; end
