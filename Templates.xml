@@ -2,7 +2,7 @@
 ..\FrameXML\UI.xsd">
     <Button name="EtalonStrTemplate" virtual="true">
 		<Size>
-			<AbsDimension x="580" y="15"/>
+			<AbsDimension x="980" y="15"/>
 		</Size>
 		<Attributes>
 			<Attribute name="usageId" type="string" value="" />
