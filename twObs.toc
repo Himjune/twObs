@@ -1,7 +1,7 @@
 ## Interface: 11306
 ## Title: TechWolfRaidObs
 ## Author: MouShindeIru
-## Version: 1.0374
+## Version: 1.0375
 ## SavedVariables: RaidUsageLog, RaidEtalons, twobsSettings, inEncounter
 
 Templates.xml
