@@ -380,6 +380,24 @@
 				</Scripts>
 			</Frame>
 
+			<Button name="$parent_del_raid" inherits="GameMenuButtonTemplate" text="-">
+				<Size>
+					<AbsDimension x="25" y="25" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TWOBS_export_raid_dropdown">
+						<Offset>
+							<AbsDimension x="-10" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						TWOBS_DelRaidButton_OnClick(self:GetName(), button);
+					</OnClick>
+				</Scripts>
+			</Button>
+
 			<Frame name="TWOBS_export_class_dropdown" inherits="UIDropDownMenuTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="TWOBS_export_raid_dropdown">
